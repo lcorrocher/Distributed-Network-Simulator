@@ -1,0 +1,412 @@
+package IPSwitch;
+
+import DataStructures.HashTable;
+import utils.*;
+
+import java.io.IOException;
+import java.sql.SQLOutput;
+import java.util.ArrayList;
+import java.util.List;
+import java.nio.file.Paths;
+import java.util.Scanner;
+
+import static IPSwitch.ARP.findEdgeRouterId;
+import static IPSwitch.ARP.localEndHostTables;
+
+import java.net.ServerSocket;
+import java.net.*;
+import java.io.*;
+
+public class Main {
+    /**
+     * hashmap to store the local area networks. City -> switch id, folder name
+     * E.g. "NEW YORK CITY", 1, "nycFolder"
+     */
+    private static HashTable<String, HashTable.Entry<Integer, String>> LOCAL_AREA_NETWORKS;
+
+    /**
+     * hashtable to store the edge router id. City -> switch id
+     * E.g. "NEW YORK CITY", 172.21
+     */
+    public static HashTable<String, String> edgeRouterId;
+
+    /**
+     * The network object to run the simulation.
+     */
+    private static Network net;
+    private static String sourceHostName;
+    private static String destinationEndHostName;
+    private static String filename;
+    private static int numberOfRuns;
+    static List<String> sourceHostNames;
+    static List<String> destinationEndHostNames;
+
+
+    public static void main(String[] args) throws IOException, InterruptedException {
+
+        List<String> filenames = List.of("beemovie.txt", "motivation.txt");
+        int numberOfTransfers = 1;
+        // Introductory welcome messages and user input
+        displayIntro(filenames);
+        Thread.sleep(2000);
+        runNetworkServer(filenames, numberOfTransfers);
+    }
+
+    private static void runNetworkServer(List<String> filenames, int numberOfTransfers) throws IOException, InterruptedException {
+
+        int portNumber = 8080;
+        boolean hasToBuildCache = true;
+        int clientId = 1;
+
+        try {
+            ServerSocket serverSocket = new ServerSocket(portNumber);
+            System.out.println("Network is running and waiting for connections...");
+
+            while (true) {
+                Socket clientSocket = serverSocket.accept();
+                System.out.println("Client connected: " + clientSocket.getInetAddress());
+
+                BufferedReader in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
+
+                String line;
+                String[] message = new String[3];
+                int index = 0;
+                while ((line = in.readLine()) != null) {
+                    message[index] = line;
+                    index++;
+                }
+
+                System.out.println("Received client message [src = " + message[0] + ", dst = " + message[1] + ", filename = " + message[2] + "]");
+
+                if (message[0].equals("cleanCache")) {
+                    //ARP.cleanLocalCache(); // TODO: uncomment this line when method implemented
+                    System.out.println("ARP cache has been cleaned.");
+                    continue;
+                }
+
+                if (hasToBuildCache) {
+                    System.out.println(Colour.yellow("Building ARP cache..."));
+                    ARP.createLocalCache();
+                    Thread.sleep(1000);
+                    System.out.println(Colour.yellow("Processing FIRST REQUEST...\n"));
+                    Logger.log("Transfer 1...\n");
+                } else {
+                    System.out.println(Colour.yellowBold("\n\nENTERING NEXT TRANSFER REQUEST..."));
+                    Thread.sleep(2000);
+                    System.out.println(Colour.yellow("Processing REQUEST " + (clientId) + "...\n"));
+                    Logger.log("\nTransfer " + (clientId) + "...\n");
+                }
+
+                Thread.sleep(1000);
+                setupNetwork(numberOfTransfers);
+                Thread.sleep(2000);
+
+                sourceHostName = message[0];
+                destinationEndHostName = message[1];
+                filename = message[2];
+
+                // log source and destination end host names
+                Logger.log("Source: " + sourceHostName + ", Destination: " + destinationEndHostName);
+
+                String destinationIP;
+
+                String sourceER = ARP.findEdgeRouterId(sourceHostName); // source edge router e.g. "NEW YORK CITY"
+                String sourceIP = localEndHostTables.get(sourceER).get(sourceHostName).getIpAddr();
+
+                // Check if the destination is cached locally. If not, initiate an ARP broadcast, which sends an arp request to every end local cache in the network, asking if the destination is in that LAN/
+                boolean cached = ARP.isCached(destinationEndHostName, sourceER);
+                if (cached) {
+                    System.out.println("\nDestination end host [" + destinationEndHostName + "] is cached locally. No ARP broadcast needed. Searching through local end host map...");
+                    System.out.println("IP address acquired for [" + destinationEndHostName + "]: " + localEndHostTables.get(sourceER).get(destinationEndHostName).getIpAddr());
+                    System.out.println("MAC address acquired for [" + destinationEndHostName + "]: " + localEndHostTables.get(sourceER).get(destinationEndHostName).getMacAddr() + "\n\n");
+                    Thread.sleep(2000);
+
+                    destinationIP = localEndHostTables.get(sourceER).get(destinationEndHostName).getIpAddr();
+
+                } else {
+                    System.out.println("\n\nDestination [" + destinationEndHostName + "] is not locally cached. ARP broadcast needed. Initiating ARP broadcast...");
+
+                    // executing ARP broadcast query and response, returning the new end host
+                    EndHost newEndHost = initiateBroadcastProtocol(sourceER, destinationEndHostName);
+
+                    String newEndHostIp = newEndHost.getIpAddr();
+                    String newEndHostMac = newEndHost.getMacAddr();
+
+                    Thread.sleep(2000);
+
+                    System.out.println("\n\nNew end host acquired: " + newEndHost);
+                    System.out.println("Updating local end host cache with destination end host [" + destinationEndHostName + "] for future queries...\n\n");
+                    Thread.sleep(2000);
+
+                    ARP.updateCache(sourceER, destinationEndHostName, newEndHostIp, newEndHostMac);
+                    destinationIP = newEndHostIp;
+
+                }
+
+                // Gets the routing number of each folder.
+                int[] locations = getSrcDest(sourceIP, destinationIP);
+                int src = locations[0];
+                int dest = locations[1];
+                System.out.println(sourceIP);
+                System.out.println(src);
+                String folder = LOCAL_AREA_NETWORKS.get(keepUpToSecondPeriod(sourceIP)).getValue();
+
+                String data = TxtToBinary.extractFromFile(filename).toString();
+                String data1 = TxtToBinary.convertToBinary(data);
+
+                // Creates our packets and places them in a List.
+                List<Packet> packets = PacketMethods.writePackets(src, dest, data1, 16, filename, MessageType.TEXT, destinationIP);
+
+                // Adds the packets to the first switch. All have same srcNetId and destNetId.
+                PacketMethods.addPacketsToStartSwitch(net, packets);
+
+                // if local, runLAN, else (not local) runWAN
+                if (src == dest) {
+                    // Starts the main loop.
+                    net.runLAN();
+                } else {
+                    // Starts the main loop.
+                    net.runWAN();
+                }
+
+                // Close connections
+                in.close();
+                clientSocket.close();
+                hasToBuildCache = false;
+                clientId++;
+            }
+        } catch (IOException e) {
+            System.err.println("IOException occurred: " + e.getMessage());
+        }
+
+        System.out.println(Colour.yellowBold("\nNetwork offline. Please check log file for times taken in application"));
+    }
+
+
+    /**
+     * Prints introductory messages and asks the user for inputs on the number of runs, source and destination end host names.
+     */
+    private static void displayIntro(List<String> filenames) throws IOException {
+        sourceHostNames = new ArrayList<>();
+        destinationEndHostNames = new ArrayList<>();
+
+        System.out.println(Colour.yellowBold("\n\n========================================= WELCOME TO THE IP SWITCH NETWORK - FOCUSSING ON HASHTABLES! ==========================================\n"));
+    }
+
+    /**
+     * Gets the number of runs the user wants to make through the network.
+     *
+     * @param input the scanner object to get user input
+     * @return the number of runs the user wants to make
+     */
+    private static int getNumberOfRuns(Scanner input) {
+        int numberOfRuns = 0;
+        boolean validInput = false;
+
+        while (!validInput) {
+            System.out.println("How many times would you like to run the network? Once or twice?(Input a positive integer):");
+            try {
+                numberOfRuns = input.nextInt();
+                input.nextLine();
+
+                if (numberOfRuns > 0) {
+                    validInput = true;
+                } else {
+                    System.out.println("Please enter a positive integer.");
+                }
+            } catch (java.util.InputMismatchException e) {
+                System.out.println("Invalid input. Please enter an integer.");
+                input.nextLine();
+            }
+        }
+
+        return numberOfRuns;
+    }
+
+    /**
+     * Gets the source and destination end host names from the user.
+     *
+     * @param input         the scanner object to get user input
+     * @param numberOfRuns  the number of runs the user wants to make
+     * @param type          the type of end host name e.g. "source" or "destination"
+     * @return a list of end host names
+     */
+    private static List<String> getInputHostNames(Scanner input, String type, int runNumber) {
+        List<String> hostNames = new ArrayList<>();
+        String prompt = type.equals("source") ? "source" : "destination";
+
+        System.out.println(Colour.yellowBold("\n                   =========================== INPUT " + type.toUpperCase() + " END HOST NAMES FOR RUN " + runNumber + " =========================\n"));
+        System.out.println(Colour.yellow("Please choose the " + prompt + " end host according to the Network schematic ranging from a to p. " +
+                "\nThe " + prompt + " host will determine whether the packets will be sent within the LAN or WAN." +
+                "\nPlease enter only ONE LETTER for the " + prompt + " end host name.\n"));
+
+        System.out.println("Enter the " + prompt + " host name for run " + runNumber + ":");
+        hostNames.add(getValidSingleLetterInput(input));
+
+        return hostNames;
+    }
+
+    /**
+     * Gets a valid single letter input from the user.
+     *
+     * @param input the scanner object to get user input
+     * @return a valid single letter input
+     */
+    private static String getValidSingleLetterInput(Scanner input) {
+        String userInput;
+        char inputChar;
+
+        while (true) {
+            System.out.println("Please enter a single letter between 'a' and 'p': ");
+            userInput = input.nextLine().trim().toLowerCase();
+
+            if (userInput.length() != 1) {
+                System.out.println("Invalid input. Please enter only ONE letter.");
+                continue;
+            }
+
+            inputChar = userInput.charAt(0);
+
+            if (inputChar < 'a' || inputChar > 'p') {
+                System.out.println("Invalid input. The letter must be between 'a' and 'p'.");
+                continue;
+            }
+
+            break;
+        }
+
+        return String.valueOf(inputChar);
+    }
+
+    /**
+     * Sends broadcast packets to all edge routers except the source edge router. It sends a packet to each edge router with the message "BROADCAST" + destination edge router.
+     *
+     * @param sourceER            the source edge router e.g. "NEW YORK CITY"
+     * @param destinationHostName the destination host name e.g. "h". Must not be local to the source edge router.
+     * @throws InterruptedException if the thread is interrupted.
+     */
+    private static EndHost initiateBroadcastProtocol(String sourceER, String destinationHostName) throws InterruptedException {
+        long startBRQ = System.currentTimeMillis(); // start time for broadcast request
+        PacketMethods.sendMultiplePackets(edgeRouterId, LOCAL_AREA_NETWORKS, sourceER, net);
+        EndHost targetEndHost = net.runBroadcastWAN(destinationHostName, sourceER);
+        long totalBRQ = System.currentTimeMillis() - startBRQ;
+
+        String endHostFoundCity = findEdgeRouterId(destinationHostName);
+        long startBRS = System.currentTimeMillis(); // start time for broadcast response
+        returnToOriginEdgeRouter(endHostFoundCity, sourceER, targetEndHost);
+
+        long totalBRS = System.currentTimeMillis() - startBRS;
+        long broadcastTime = totalBRQ + totalBRS;
+
+        String logMessage = "Broadcast Protocol time taken for sourcing endHost " + destinationHostName + ": " + broadcastTime + "ms. LAN of end host: " + endHostFoundCity;
+        Logger.log(logMessage);
+        System.out.println(Colour.yellow(logMessage));
+        System.out.println(Colour.yellow("Time has been logged"));
+
+        return targetEndHost;
+    }
+
+    private static void returnToOriginEdgeRouter(String endHostFoundCity, String originCity, EndHost targetEndHost) throws InterruptedException {
+        PacketMethods.createBroadcastResponsePacket(edgeRouterId, LOCAL_AREA_NETWORKS, endHostFoundCity, originCity, net);
+        net.runResponseWAN(originCity);
+    }
+
+    /**
+     * Sets up the network with the given number of files to transfer.
+     *
+     * @param filesToTransfer the number of files to transfer from a source folder to a destination folder.
+     * @throws IOException if the file cannot be read.
+     */
+    private static void setupNetwork(int filesToTransfer) throws IOException, InterruptedException {
+        LOCAL_AREA_NETWORKS = new HashTable<>();
+
+        // Create an entry to put into the inner map
+        HashTable.Entry<Integer, String> switchEntry1 = new HashTable.Entry(1, "nycFolder"); // id of the switch + folder for the switch
+        HashTable.Entry<Integer, String> switchEntry2 = new HashTable.Entry(2, "fresnoFolder");
+        HashTable.Entry<Integer, String> switchEntry3 = new HashTable.Entry(3, "minneapolisFolder");
+        HashTable.Entry<Integer, String> switchEntry4 = new HashTable.Entry(4, "austinFolder");
+
+        // read from edgeRouter.txt and create a map of city -> switch id
+        List<String[]> lines = FileUtils.readFile("edgeRouterId.txt");
+        edgeRouterId = new HashTable<>();
+        for (String[] line : lines) {
+            String[] entries = line[0].split(";");
+            for (String entry : entries) {
+                String[] col = entry.split("\\|");
+                String city = col[0];
+                String id = col[1];
+                edgeRouterId.put(city, id);
+            }
+        }
+        // Put the entry into the outer map
+        // name of the LAN and map with id of the switch + folder for the switch. e.g. "172.23" -> 1, "nycFolder"
+        // {NEW YORK CITY={1=nycFolder}, FRESNO={2=fresnoFolder}, MINNEAPOLIS={3=minneapolisFolder}, AUSTIN={4=austinFolder}}
+        LOCAL_AREA_NETWORKS.put(edgeRouterId.get("NEW YORK CITY"), switchEntry1);
+        LOCAL_AREA_NETWORKS.put(edgeRouterId.get("FRESNO"), switchEntry2);
+        LOCAL_AREA_NETWORKS.put(edgeRouterId.get("MINNEAPOLIS"), switchEntry3);
+        LOCAL_AREA_NETWORKS.put(edgeRouterId.get("AUSTIN"), switchEntry4);
+        net = new Network(LOCAL_AREA_NETWORKS, filesToTransfer);
+    }
+
+    /**
+     * Gets the city from the switch id.
+     *
+     * @param switchId the switch id e.g. "172.23"
+     * @return the city name e.g. "NEW YORK CITY"
+     */
+    public static String getCityNameFromSwitchId(String switchId) {
+        for (HashTable.Entry<String, String> entry : edgeRouterId.entrySet()) {
+            if (entry.getValue().equals(switchId)) {
+                return entry.getKey();
+            }
+        }
+        return null;
+    }
+
+    public static String getIdFromCityName(String city) {
+        return edgeRouterId.get(city);
+    }
+
+
+    /**
+     * Gets the source and destination switches from the LOCAL_AREA_NETWORKS map.
+     *
+     * @param sourceName      the name of the source switch e.g. "LUCA"
+     * @param destinationName the name of the destination switch e.g. "MIGUEL"
+     * @return an array of integers with the source and destination switch ids.
+     */
+    private static int[] getSrcDest(String sourceName, String destinationName) {
+        int[] out = new int[2];
+
+        out[0] = LOCAL_AREA_NETWORKS.get(keepUpToSecondPeriod(sourceName)).getKey();
+        out[1] = LOCAL_AREA_NETWORKS.get(keepUpToSecondPeriod(destinationName)).getKey();
+
+        return out;
+    }
+
+    /**
+     * Removes end of IP Address for use in finding the top level IPSwitch.Switch in the IPSwitch.Network.
+     *
+     * @param text the ip address
+     * @return returns the resulted "cut down" string
+     */
+    private static String keepUpToSecondPeriod(String text) {
+        int periodCount = 0;
+        StringBuilder result = new StringBuilder();
+        for (char c : text.toCharArray()) {
+            if (c == '.') {
+                periodCount++;
+                if (periodCount == 2) {
+                    break;
+                }
+            }
+            result.append(c);
+        }
+        return result.toString();
+    }
+
+    public static String getDestinationEndHostName() {
+        return destinationEndHostName;
+    }
+
+}
