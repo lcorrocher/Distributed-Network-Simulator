@@ -3,6 +3,7 @@
     <output-path>$PROJECT_DIR$/out/artifacts/server_jar</output-path>
     <root id="archive" name="server.jar">
       <element id="module-output" name="server" />
+      <element id="extracted-dir" path="$MAVEN_REPOSITORY$/org/apache/commons/commons-csv/1.10.0/commons-csv-1.10.0.jar" path-in-jar="/" />
     </root>
   </artifact>
 </component>

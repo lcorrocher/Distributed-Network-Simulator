@@ -27,8 +27,8 @@ public class NodeTest {
     @Test
     public void testDistanceTo() {
         // Create mock objects for dublin and london
-        Coordinates dublinCoords = new Coordinates(53.349805, -6.26031); // Dublin, Ireland
-        Coordinates londonCoords = new Coordinates(51.507351, -0.127758); // London, UK
+        Coordinates dublinCoords = new Coordinates(53.349805, -6.26031);
+        Coordinates londonCoords = new Coordinates(51.507351, -0.127758);
         Node dublin = new NodeStub(1, "Dublin", NodeType.ROUTER, dublinCoords);
         Node london = new NodeStub(2, "London", NodeType.ROUTER, londonCoords);
 
@@ -38,7 +38,6 @@ public class NodeTest {
 
         System.out.println("Actual distance: " + actualDistance);
 
-        // Compare the expected and actual distances
-        assertEquals(expectedDistance, actualDistance, 1); // Tolerance of 1 km
+        assertEquals(expectedDistance, actualDistance, 1); // Tolerance 1 km
     }
 }

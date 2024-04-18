@@ -332,7 +332,7 @@ public class Main {
 
         endHostFoundCity = findEdgeRouterId(destinationHostName);
         long startBRS = System.currentTimeMillis(); // start time for broadcast response
-        returnToOriginEdgeRouter(endHostFoundCity, sourceER, targetEndHost);
+        returnToOriginEdgeRouter(endHostFoundCity, sourceER);
 
         long totalBRS = System.currentTimeMillis() - startBRS;
         long broadcastTime = totalBRQ + totalBRS;
@@ -345,7 +345,7 @@ public class Main {
         return targetEndHost;
     }
 
-    private static void returnToOriginEdgeRouter(String endHostFoundCity, String originCity, EndHost targetEndHost) throws InterruptedException {
+    private static void returnToOriginEdgeRouter(String endHostFoundCity, String originCity) throws InterruptedException {
         PacketMethods.createBroadcastResponsePacket(edgeRouterId, LOCAL_AREA_NETWORKS, endHostFoundCity, originCity, net);
         net.runResponseWAN(originCity);
     }
@@ -441,10 +441,6 @@ public class Main {
             }
         }
         return null;
-    }
-
-    public static String getIdFromCityName(String city) {
-        return edgeRouterId.get(city);
     }
 
 
