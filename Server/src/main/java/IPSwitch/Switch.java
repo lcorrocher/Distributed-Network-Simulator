@@ -11,13 +11,26 @@ import DataStructures.NodeType;
  */
 
 public class Switch extends Node {
+    private final Coordinates coordinates;
     private final String folderPath;
     private SwitchTree lanTree;
 
-    public Switch(int id, String name, String folderPath) {
+
+    public Switch(int id, String name, String folderPath, Coordinates coordinates) {
         super(id, name, NodeType.SWITCH);
         this.folderPath = folderPath;
         this.lanTree = new SwitchTree(this);
+        this.coordinates = coordinates;
+    }
+
+    @Override
+    public Coordinates getCoordinates() {
+        return coordinates;
+    }
+
+    @Override
+    public String toString() {
+        return "SWITCH: " + Main.getCityNameFromSwitchId(getName()) + String.format(", Coordinates: %s", coordinates);
     }
 
     /**
@@ -35,4 +48,6 @@ public class Switch extends Node {
     public SwitchTree getLanTree() {
         return lanTree;
     }
+
+
 }

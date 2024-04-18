@@ -11,10 +11,12 @@ import java.io.IOException;
 import java.io.Reader;
 
 public class CSVReader {
+    public static HashTable<String, Coordinates> cityCoordinates;
     public static HashTable<String, Coordinates> readCoordinatesCSV() throws IOException {
         // TODO: change to correct path. Not sure how not working with correct relative path
+        System.out.println("Loading coordinates from CSV file...\n");
         String filePath = "server/io/lans/coordinates.csv";
-        HashTable<String, Coordinates> cityCoordinates = new HashTable<>();
+        cityCoordinates = new HashTable<>();
 
         try (Reader reader = new FileReader(filePath);
              CSVParser csvParser = CSVFormat.DEFAULT.parse(reader)) {
@@ -37,6 +39,7 @@ public class CSVReader {
 
         return cityCoordinates;
     }
+
 
     public static void main(String[] args) {
         try {

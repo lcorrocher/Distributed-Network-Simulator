@@ -74,7 +74,7 @@ public class ARP {
         localEndHostTables.get(edgeRouterId).put(endHostName, new EndHost(1, endHostName, endHostIp, endHostMac));
     }
     /**
-     * Looks through all of the local end host tables to see if the end host is present.
+     * Looks through all of the local end host tables to see if the end host is present and returns the edge router ID.
      *
      * @param endHostName the name of the end host to find e.g. "a"
      * @return the edge router ID where the end host is located e.g. "NEW YORK CITY"

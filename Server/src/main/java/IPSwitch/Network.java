@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Objects;
 
+import static utils.CSVReader.cityCoordinates;
 import static utils.LoadingBar.printDynamicLoadingBar;
 
 
@@ -58,6 +59,10 @@ public class Network {
         return netIdTable;
     }
 
+
+    /**
+     * gets the route name from the netId. e.g. 1 -> "fresnoToNyc"
+     */
     private String getRouteNameFromNetId(int netId) {
         for (HashTable.Entry<String, Integer> entry : netIdTable.entrySet()) {
             if (entry.getValue() == netId) {
@@ -125,6 +130,9 @@ public class Network {
                 Router currentRouter = nextRouterList.get(counter % (nextRouterList.size()));
                 Router nextRouter = nextRouterList.get((counter + 1) % (nextRouterList.size()));
 
+
+                double distanceToNextNode = currentRouter.getDistanceTo(nextRouter);
+
                 try {
                     currentRouter.top();
                 } catch (NoSuchElementException e) {
@@ -153,6 +161,7 @@ public class Network {
             //Thread.sleep(TRANSFER_RATE);
             counter++;
         }
+        System.out.println(Colour.yellowBold("Transfer complete.\nPlease check the destination folder for the transferred file. The log file contains details on processing speed.\n"));
     }
 
     public void runResponseWAN(String originCity) throws InterruptedException {
@@ -327,6 +336,8 @@ public class Network {
     }
 
 
+
+    // TODO: make msgId to remove packets which contain the same msgId
     /**
      * Method to clear the network of packets. Dequeues all packets from all routers and switches in the network.
      * If the queue is empty, it ignores it and continues to the next queue.
@@ -600,7 +611,7 @@ public class Network {
 
         this.netIdTable = createNetIdTable();
 
-        String route = "";
+        String route;
 
         for (String[] entry : lines) {
             String netName = entry[0].split("\\|")[0];
@@ -613,13 +624,21 @@ public class Network {
             System.out.print(" with");
             System.out.println(Colour.yellow(" netID = " + netId));
 
-            // if the topology HashTable already contains the netId
+            // TODO: BUG here
+            // only creates routers it hasn't already created or seen before from topology.txt file
+
             if (topology.containsKey(netId)) {
                 for (int i = 1; i < entry.length; i++) {
                     String cityName = entry[i].split("\\|")[0];
                     int routerId = Integer.parseInt(entry[i].split("\\|")[1]);
                     double nextHopLength = Double.parseDouble(entry[i].split("\\|")[2]);
-                    Router r = new Router(routerId, cityName);
+                    Coordinates coordinates = cityCoordinates.get(cityName);
+                    Router r = new Router(routerId, cityName, coordinates);
+
+                    // TODO: REMOVE Thread and System.out.println
+//                    System.out.println(r + routerId + coordinates);
+                    System.out.println(r);
+                    Thread.sleep(2000);
 
                     // if router HashTable already contains city entry
                     if (routers.containsKey(cityName)) {
@@ -663,7 +682,7 @@ public class Network {
      * @param filesToTransfer   The number of files to transfer from a source folder to a destination folder.
      * @throws IOException If the file is not found or cannot be read.
      */
-    public Network(HashTable<String, HashTable.Entry<Integer, String>> localAreaNetworks, int filesToTransfer) throws IOException, InterruptedException {
+    public Network(HashTable<String, HashTable.Entry<Integer, String>> localAreaNetworks,int filesToTransfer) throws IOException, InterruptedException {
         // create n switches
         switches = new HashTable<>();
         routers = new HashTable<>();
@@ -672,11 +691,21 @@ public class Network {
         this.filesToTransfer = filesToTransfer;
 
 
+        System.out.println("BUILDING SWITCHES...");
+        Thread.sleep(2000);
+
         for (HashTable.Entry<String, HashTable.Entry<Integer, String>> entry : localAreaNetworks.entrySet()) {
-            String networkName = entry.getKey();
+            String networkIP = entry.getKey();
+            String cityNameSt = Main.getCityNameFromSwitchId(networkIP);
             Integer networkId = entry.getValue().getKey();
             String folderPath = entry.getValue().getValue();
-            Switch s = new Switch(networkId, networkName, folderPath);
+            Coordinates coordinates = cityCoordinates.get(cityNameSt);
+            Switch s = new Switch(networkId, networkIP, folderPath, coordinates);
+
+            // TODO: REMOVE Thread and System.out.println
+            System.out.println(s);
+            Thread.sleep(2000);
+
             switches.put(networkId, s);
 
             ArrayList<Double> nextHopLengthList = new ArrayList<>();
@@ -685,19 +714,21 @@ public class Network {
             topology.put(networkId, TableEntry);
             System.out.println("[NETWORK] - Created IPSwitch.Switch " + s.getName() + " with netID = " + s.getId());
 
+
+
             //Create our LAN Network. Each Switch is the root node of a Tree.
-            Switch childNodeSwitchA = new Switch(1, networkName + ".001", entry.getValue().getValue());
-            Switch childNodeSwitchB = new Switch(2, networkName + ".002", entry.getValue().getValue());
+            Switch childNodeSwitchA = new Switch(1, networkIP + ".001", entry.getValue().getValue(), null);
+            Switch childNodeSwitchB = new Switch(2, networkIP + ".002", entry.getValue().getValue(), null);
             TreeNode childNodeSwitchATreeNode = new TreeNode(childNodeSwitchA);
             TreeNode childNodeSwitchBTreeNode = new TreeNode(childNodeSwitchB);
             s.getLanTree().getRoot().addChild(childNodeSwitchATreeNode);
             s.getLanTree().getRoot().addChild(childNodeSwitchBTreeNode);
 
             //Create the child nodes of our tree.
-            Switch childNodeEndpointA = new Switch(4, childNodeSwitchA.getName() + ".1", entry.getValue().getValue());
-            Switch childNodeEndpointB = new Switch(5, childNodeSwitchA.getName() + ".2", entry.getValue().getValue());
-            Switch childNodeEndpointC = new Switch(6, childNodeSwitchB.getName() + ".3", entry.getValue().getValue());
-            Switch childNodeEndpointD = new Switch(7, childNodeSwitchB.getName() + ".4", entry.getValue().getValue());
+            Switch childNodeEndpointA = new Switch(4, childNodeSwitchA.getName() + ".1", entry.getValue().getValue(), null);
+            Switch childNodeEndpointB = new Switch(5, childNodeSwitchA.getName() + ".2", entry.getValue().getValue(), null);
+            Switch childNodeEndpointC = new Switch(6, childNodeSwitchB.getName() + ".3", entry.getValue().getValue(), null);
+            Switch childNodeEndpointD = new Switch(7, childNodeSwitchB.getName() + ".4", entry.getValue().getValue(), null);
             TreeNode childNodeEndpointATreeNode = new TreeNode(childNodeEndpointA);
             TreeNode childNodeEndpointBTreeNode = new TreeNode(childNodeEndpointB);
             TreeNode childNodeEndpointCTreeNode = new TreeNode(childNodeEndpointC);

@@ -1,8 +1,10 @@
 package DataStructures;
 
+import IPSwitch.Coordinates;
 import IPSwitch.Packet;
 
 import java.util.NoSuchElementException;
+
 
 /**
  * Custom node class to represent a node in the network
@@ -12,7 +14,7 @@ import java.util.NoSuchElementException;
  * Each node has a unique id and name. The id, name and type are set in the constructor and cannot be changed.
  */
 
-public class Node {
+public abstract class Node {
 
     private final int id;
     private final String name;
@@ -23,7 +25,14 @@ public class Node {
         this.id = id;
         this.name = name;
         this.type = type;
+
         q = new Queue<>();
+    }
+
+    public abstract Coordinates getCoordinates();
+
+    public double getDistanceTo(Node otherNode) {
+        return this.getCoordinates().haversine(otherNode.getCoordinates());
     }
 
 
@@ -81,10 +90,6 @@ public class Node {
     public int getId() {
         return id;
     }
-    @Override
-    public String toString() {
-        return type + " " +  name;
-    }
 
     public void enqueue(Packet packet){
         q.enqueue(packet);
@@ -102,4 +107,8 @@ public class Node {
         return q.peek(n);
     }
 
+    @Override
+    public String toString() {
+        return String.format("Node %d: %s", id, name);
+    }
 }

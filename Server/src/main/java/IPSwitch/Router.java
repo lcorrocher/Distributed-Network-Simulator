@@ -8,15 +8,32 @@ import DataStructures.NodeType;
  */
 
 public class Router extends Node {
+    private final Coordinates coordinates;
 
     /**
      * Constructor for the router.
-     * @param id The id of the router.
+     *
+     * @param id   The id of the router.
      * @param name The name of the router.
      */
-    public Router(int id, String name) {
+
+    public Router(int id, String name, Coordinates coordinates) {
         super(id, name, NodeType.ROUTER);
+        this.coordinates = coordinates;
     }
+
+    @Override
+    public Coordinates getCoordinates() {
+        return coordinates;
+    }
+
+    @Override
+    public String toString() {
+        return "ROUTER: " +  getName() + String.format(", Coordinates: %s", coordinates);
+    }
+
+
+
 
    /*// router should have a capacity of 5 packets. If the queue is full, the packet should be dequeued and enqueued to the switch.
     public void enqueue (IPSwitch.Packet packet, IPSwitch.Switch source) {
@@ -27,4 +44,4 @@ public class Router extends Node {
             this.enqueue(packet);
         }
     }*/
-}
+    }

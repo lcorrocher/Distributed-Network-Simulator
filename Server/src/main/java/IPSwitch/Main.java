@@ -221,7 +221,7 @@ public class Main {
             System.err.println("IOException occurred: " + e.getMessage());
         }
 
-        System.out.println(Colour.yellowBold("\nNetwork offline. Please check log file for times taken in application"));
+        System.out.println(Colour.yellowBold("\nNetwork offline. Thank you for using the Distributed Network Simulator!"));
     }
 
     public static String getEndHostFoundCity() {
@@ -269,14 +269,7 @@ public class Main {
         return numberOfRuns;
     }
 
-    /**
-     * Gets the source and destination end host names from the user.
-     *
-     * @param input         the scanner object to get user input
-     * @param numberOfRuns  the number of runs the user wants to make
-     * @param type          the type of end host name e.g. "source" or "destination"
-     * @return a list of end host names
-     */
+
     private static List<String> getInputHostNames(Scanner input, String type, int runNumber) {
         List<String> hostNames = new ArrayList<>();
         String prompt = type.equals("source") ? "source" : "destination";
@@ -365,6 +358,9 @@ public class Main {
      */
     private static void setupNetwork(int filesToTransfer) throws IOException, InterruptedException {
         System.out.println("Building network and loading lan topology...");
+
+        CSVReader.readCoordinatesCSV();
+
         Thread.sleep(2000);
 
         LOCAL_AREA_NETWORKS = new HashTable<>();

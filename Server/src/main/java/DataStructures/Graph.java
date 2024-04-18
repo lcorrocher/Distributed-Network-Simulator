@@ -227,7 +227,9 @@ public class Graph {
 
 
     public static void main(String[] args) throws IOException {
-        Graph graph = new Graph("topology.txt");
+        String pathToTopology = "server/";
+
+        Graph graph = new Graph(pathToTopology + "topology.txt");
         NetworkUI ui = new NetworkUI(graph);
         ui.setVisible(true);
         System.out.println(graph.getEdges());
@@ -245,7 +247,7 @@ public class Graph {
         // Convert nanoseconds to milliseconds for better readability
         double milliseconds = duration / 1e6;
 
-        int hardwiredDistance = distanceFromTopology("nyc", "Fresno", "topology.txt");
+        int hardwiredDistance = distanceFromTopology("nyc", "Fresno",  pathToTopology + "topology.txt");
         System.out.println("\n===Distance from " + sourceNode.getLocationName() + " to " + destinationNode.getLocationName() + "===");
 
         System.out.println("Shortest path found in " + milliseconds + " milliseconds.");

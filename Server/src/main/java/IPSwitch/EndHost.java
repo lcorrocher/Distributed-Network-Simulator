@@ -13,6 +13,10 @@ public class EndHost extends Node {
         this.macAddr = macAddr;
     }
 
+    @Override
+    public Coordinates getCoordinates() {
+        throw new UnsupportedOperationException("EndHost does not support distance calculation with other node types. EndHost doesn't have coordinates.");
+    }
 
     public String getIpAddr() {
         return ipAddr;
