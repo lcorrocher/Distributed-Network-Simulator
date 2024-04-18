@@ -1,0 +1,480 @@
+
+
+                                BLADE RUNNER
+
+
+
+                               Screenplay by
+
+                              HAMPTON FANCHER
+
+                                    and
+
+                               DAVID PEOPLES
+
+
+
+
+
+
+        February 23, 1981
+
+
+
+
+
+
+
+
+
+
+
+        NOTE: THE HARD COPY OF THIS SCRIPT CONTAINED SCENE NUMBERS
+        AND SOME "SCENE OMITTED" SLUGS. THEY HAVE BEEN REMOVED FOR
+        THIS SOFT COPY.
+
+
+
+
+        android (an'droid) adj.  Possessing human features - n.
+                A synthetic man created from biological materials.
+                Also called humanoid.  (Late Greek androeides,
+                manlike:  ANDR(O) - OID.)
+
+                                        THE AMERICAN HERITAGE
+                                        DICTIONARY OF THE ENGLISH
+                                        LANGUAGE  (1976)
+
+
+
+        android (an'droid) n, Gk. humanoid automation. more at
+                robot./ 1. early version utilized for work too
+                boring, dangerous or unpleasant for humans.
+                2. second generation bio-engineered.  Electronic
+                relay units and positronic brains.  Used in space
+                to explore inhospitable environments.  3. third
+                generation synthogenetic.  REPLICANT, constructed
+                of skin/flesh culture.  Selected enogenic transfer
+                conversion.  Capable of self perpetuating thought.
+                paraphysical abilities.  Developed for emigration
+                program.
+
+                                        WEBSTER'S DICTIONARY
+                                        New International  (2012)
+
+
+
+
+
+
+
+
+        FADE IN:
+
+        EXT. HADES - DUSK
+
+        We are MOVING TOWARD the Tyrell Corporation across a
+        vast plain of industrialization, menacing shapes on the
+        horizon, stacks belching flames five hundred feet into
+        the sky the color of cigar ash.  The CAMERA MOVES INTO
+        a window in the large pyramid-shaped building.  A man
+        is sitting at a table.  Another man enters the room and
+        sits down.  The following scene is reflected in the eye
+        until HOLDEN is seated.
+
+
+        INT. TYRELL CORPORATION INTERROGATION ROOM - DUSK
+
+        The eye is magnified and deeply revealed.  Flecks of
+        green and yellow in a field of milky blue.  Icy fila-
+        ments surround the undulating center.
+
+        The eye is brown in a tiny screen.  On the metallic
+        surface below, the words VOIGHT-KAMPFF are finely
+        etched.  There's a touch-light panel across the top
+        and on the side of the screen, a dial that registers
+        fluctuation of the iris.
+
+        The instrument is no bigger than a music box and sits
+        on a table between two men.  The man talking is big,
+        looks like an overstuffed kid.  LEON it says on his
+        breast pocket.  He's dressed in a warehouseman's uni-
+        form and his pudgy hands are folded expectantly in his
+        lap.  Despite the obvious heat, he looks very cool.
+
+        The man facing him is lean, hollow-cheeked, and dressed
+        in grey.  Detached and efficient, he looks like a cop
+        or an accountant.  His name is Holden and he's all
+        business, except for the sweat on his face.
+
+        The room is large and humid.  Rows of salvaged junk
+        are stacked neatly against the walls.  Two large FANS
+        WHIRR above their heads.
+
+                                LEON
+                  Okay if I talk?
+
+        Holden doesn't answer.  He's centering Leon's eye on
+        the machine.
+
+                                LEON
+                  I kinda get nervous when I take
+                  tests.
+
+                                HOLDEN
+                  Don't move.
+
+                                LEON
+                  Sorry.
+
+        He tries not to move, but finally his lips can't help
+        a sheepish smile.
+
+                                LEON
+                  I already had I.Q. test this year...
+                  but I don't think I never had a...
+
+                                HOLDEN
+                  Reaction time is a factor in this so
+                  please pay attention. Answer as quickly
+                  as you can.
+
+                                LEON
+                  Uh... sure...
+
+                                HOLDEN
+                  One one eight seven at Hunterwasser...
+
+                                LEON
+                  Oh... that's the hotel.
+
+                                HOLDEN
+                  What?
+
+                                LEON
+                  Where I live.
+
+                                HOLDEN
+                  Nice place ?
+
+                                LEON
+                  Huh? Sure.  Yeah. I guess. Is
+                  that.. part of the test ?
+
+       Holden smiles a patronising smile.
+
+                                HOLDEN
+                  Warming you up, that's all.
+
+                                LEON
+                  Oh.
+                  It's
+
+                                HOLDEN
+                  You're in a desert, walking along
+                  in the sand when....
+
+                                LEON
+                  Is this the test now ?
+
+                                HOLDEN
+                  Yes.   You're in a desert, walking
+                  along in the sand when all of a sudden
+                  you lookdown and see a.....
+
+                                LEON
+                  What one ?
+
+   It was a timid interruption, hardly audible.
+
+                                HOLDEN
+                  What ?
+
+                                LEON
+                  What desert ?
+
+                                HOLDEN
+                  Doesn't make any difference what
+                  desert.. it's completely hypothetical.
+
+                                LEON
+                  But how come I'd be there?
+
+                                HOLDEN
+                  Maybe you're fed up, maybe you want
+                  to be by yourself.. who knows.
+                  So you look down and see a
+                  tortoise.  It's crawling toward
+                  you....
+
+                                LEON
+                  A tortoise.  What's that?
+
+                                HOLDEN
+                  Know what a turtle is?
+
+                                LEON
+                  Of course.
+
+                                HOLDEN
+                  Same thing.
+
+                                LEON
+                  I never seen a turtle.
+
+        He sees Holden's patience is wearing thin.
+
+                                LEON
+                  But I understand what you mean.
+
+                                HOLDEN
+                  You reach down and flip the
+                  tortoise over on its back, Leon.
+
+        Keeping an eye on his subject, Holden notes the dials
+        in the Voight-Kampff.  One of the needles quivers
+        slightly.
+
+                                LEON
+                  You make these questions, Mr.
+                  Holden, or they write 'em down
+                  for you?
+
+        Disregarding the question, Holden continues, picking
+        up the pace.
+
+                                HOLDEN
+                  The tortoise lays on its back,
+                  its belly baking in the hot sun,
+                  beating its legs trying to turn
+                  itself over.  But it can't.  Not
+                  without your help.  But you're not
+                  helping.
+
+        Leon's upper lip is quivering.
+
+                                LEON
+                  Whatya mean, I'm not helping?
+
+                                HOLDEN
+                  I mean you're not helping!  Why is
+                  that, Leon?
+
+        Holden looks hard at Leon, piercing look.
+
+        Leon is flushed with anger, breathing hard, it's a
+        bad moment, he might erupt.
+
+        Suddenly Holden grins disarmingly.
+
+                                HOLDEN
+                  They're just questions, Leon.
+                  In answer to your query, they're
+                  written down for me.  It's a
+                  test, designed to provoke an
+                  emotional response.
+
+        Leon is glaring now, the blush subsides, his anger
+        slightly defused.
+
+        Holden smiles cheerfully, very smooth.
+
+                                HOLDEN
+                  Shall we continue?
+
+        Leon nods, still frowning, suspiciously.
+
+                                HOLDEN
+                  Describe in single words.  Only
+                  the good things that come into
+                  your mind.  About your mother.
+
+                                LEON
+                  My...
+
+        Leon looks shocked, surprised.  But the needles in
+        the computer barely move.  Holden goes for the in-
+        side of his coat.  But big Leon is faster.  His
+        laser burns a hole the size of a nickel through
+        Holden's stomach.  Unlike a bullet, a laser causes
+        no impact.  It goes through Holden's shoulder and
+        comes out his back, clean as a whistle.  Like a
+        rag doll he falls back into the seat.  Big slow Leon
+        is already walking away, but he stops, turns, and
+        with a little smile of satisfaction fires through
+        the back of the seat.
+
+        As Leon walks out of the room the Voight-Kampff
+        begins to blink, faint but steady.
+
+                                                   CUT TO:
+
+
+        EXT. OVERHEAD VIEW CITY - NIGHT
+
+        We are looking down on a city of the future where
+        gigantic buildings dwarf the ancient skyscrapers --
+        of -- now as a huge blimp, flashing lights and
+        BLARING SOUND drifts slowly over the tall buildings.
+
+                                                   CUT TO:
+
+
+        EXT. THE BLIMP - FROM BELOW - NIGHT
+
+        As the blimp drifts through the tall buildings ad-
+        vertisements appear on the curved sides of dirigible
+        and an accompanying SOUNDTRACK proclaims, with AM
+        enthusiasm, the virtues of Offworld emigration.
+
+                                BLIMP TRACK
+                  ATTENTION SUPERVISORY PERSONNEL!
+                  (WE NEED YOU YOU YOU)
+                  ATTENTION FAMILY MAKERS!
+                  (WE NEED YOU you you)
+                  OPPORTUNITY!
+                  (WE NEED YOU you you you)
+                  AUTOMATIC ADVANCEMENT!
+                  (WE NEED YOU YOU YOU)
+                  TOP PAY!
+                  (WE NEED YOU YOU you you)
+                  NUMEROUS BONUSES!
+                  (WE NEED YOU YOU you you)
+                  SPECIAL INCENTIVES!
+                  (WE NEED YOU YOU YOU you)
+                  NINE PAID VACATIONS PER YEAR!
+                  (WE NEED YOU you you)
+                         (beat, beat)
+                  The Dominguez-Shimata colony
+                  wants supervisory recruits and
+                  families.
+
+                  Join us in a clean, fresh
+                  environment featuring the
+                  invigorating Johnson and
+                  Murikami California Climate!
+                  (WE NEED YOU YOU you you you)
+                  Enjoy the numerous recreation
+                  areas and resorts such as the
+                  famous Elysium Crater Resort!
+
+                  (WE NEED YOU YOU you you)
+
+                  Let our abundant man-made labour
+                  force cater to your personal needs!
+
+                  (WE NEED YOU YOU you you)
+
+                  If you meet health and experience
+                  qualifications for the Offworld
+                  Emmigration Programs... the
+                  standard OPE short form... there's
+                  a place for you at Dominguez and
+                  Shimata Colonies.
+
+                  Press the button now!
+
+                  Give yourself a brand new world!
+
+                  (WE NEED YOU YOU you you)
+
+
+        EXT. CITY STREET - NIGHT
+
+        Lights from the blimp flash along the street and wipe
+        across the crowds of pedestrians as the VOICE TRACK
+        CONTINUES TO BLARE from above.
+
+        A portable noodle bar is crowded with customers, sit-
+        ting on stools slurping their food out of bowls.
+
+        DECKARD is standing near the noodle bar waiting for a
+        seat.  He's in his thirties, wiry, athletic, rumpled,
+        used, unshaven.  He's holding a newspaper, made of
+        tissue paper, open while he glances at the blimp
+        passing NOISILY overhead.  Then he notices the
+        COUNTERMAN.
+
+        The Counterman is beckoning to him to a newly vacated
+        seat.
+
+        Deckard sits down at the noodle bar and the Counterman,
+        an elderly Japanese, slaps a menu in front of him.
+
+        No words on the menu, just pictures of sliced fish
+        parts.
+
+        Deckard points to a particular item and holds up four
+        fingers.
+
+        The Counterman looks at the item on the menu, confirms
+        the order by holding up two fingers.
+
+        Deckard shakes his head "no" and repeats his four
+        fingers.
+
+        The Counterman nods, corrected and hurries off.
+
+        Deckard glances overhead.
+
+        The blimp drifts off among the buildings like a fish
+        disappearing in seaweed, the NOISY VOICE doing a
+        diminuendo.
+
+        Whap.  The Counterman slaps a bowl of rice and a pot
+        of tea in front of Deckard.  Then he puts the little
+        bowl with the two slices of fish on the counter.
+
+        Deckard looks at the fish.  Two slices of fish.
+
+        He looks at the Counterman and holds up four fingers.
+
+        The Counterman looks down at the two slices of fish,
+        looks like two to him.  He looks at Deckard as though
+        Deckard was a fool and holds up two fingers.  He can
+        count!
+
+        Deckard stares bleakly at the fish.  Can't win.
+
+        He starts to eat and that's when he feels a tap on his
+        shoulder.  He glances over his right shoulder.
+
+        A huge cop in uniform is looming behind him.
+
+        Deckard feels funny, looks left.
+
+        Another cop is looming over his left shoulder.
+
+        Deckard is tapped again from the right.
+
+        Turning again he realizes that it isn't the cop tapping
+        him, it's the short Japanese guy next to the cop.  The
+        guy's got beady eyes and lots of energy.  His name is
+        GAFF.
+
+                                GAFF
+                         (in Japanese)
+                  *** You will be required to
+                  accompany me, sir. ***
+
+        Deckard doesn't understand Japanese, thinks the man
+        wants a seat.
+
+                                DECKARD
+                  Wait your turn, pal.
+
+        Deckard turns back to his food.
+
+                                GAFF
+                         (in Japanese)
+                  *** If you do not comply with an
+                  official request, I will be
+                  obliged to exert my authority. ***
+
+        Deckard is ignoring Gaff but the Counterman leans in
+        Deckard's face and translates.
+
+                                THE COUNTERMAN
+                  He say, you go with him.
+
+        Deckard turns and finds Gaff waving a badge in his face.
