@@ -11,7 +11,7 @@ public class Logger {
 
     /**
      * Logs a message to the application log file
-     * @param message
+     * @param message the string to log out
      */
     public static void log(String message) {
         try {

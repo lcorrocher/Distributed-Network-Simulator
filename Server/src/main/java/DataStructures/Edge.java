@@ -8,7 +8,7 @@ import java.util.Objects;
 
 public class Edge {
     private String src, dest;
-    int distance;
+    double distance;
 
     /**
      * Constructor for edge.
@@ -16,7 +16,7 @@ public class Edge {
      * @param dest The destination node.
      * @param distance The distance between the nodes.
      */
-    public Edge(String src, String dest, int distance){
+    public Edge(String src, String dest, double distance){
         this.src = src;
         this.dest = dest;
         this.distance = distance;
@@ -30,7 +30,7 @@ public class Edge {
         return dest;
     }
 
-    public int getDistance(){
+    public double getDistance(){
         return distance;
     }
 

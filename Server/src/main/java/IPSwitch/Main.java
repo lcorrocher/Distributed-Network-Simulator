@@ -35,7 +35,6 @@ public class Main {
     private static String sourceHostName;
     private static String destinationEndHostName;
     private static String filename;
-    private static int numberOfRuns;
     static List<String> sourceHostNames;
     static List<String> destinationEndHostNames;
     private static String endHostFoundCity;
@@ -45,16 +44,11 @@ public class Main {
 
     public static void main(String[] args) throws IOException, InterruptedException {
 
-//        String filenamesFilePath = "server/io/messages/";
-
         String filenamesFilePath = IO_DIR + "messages/";
-
         File directory = new File(filenamesFilePath);
-
         List<String> filenames = new ArrayList<>();
 
         if (directory.exists() && directory.isDirectory()) {
-            // all files in the directory
             File[] files = directory.listFiles();
 
             if (files != null) {
@@ -67,12 +61,12 @@ public class Main {
 
         } else {
             System.out.println("The specified directory does not exist or is not a directory.");
-        };
+        }
 
 
         int numberOfTransfers = 1;
         // Introductory welcome messages and user input
-        displayIntro(filenames);
+        displayIntro();
         Thread.sleep(2000);
         runNetworkServer(filenamesFilePath, numberOfTransfers);
     }
@@ -89,7 +83,7 @@ public class Main {
 
         try {
             ServerSocket serverSocket = new ServerSocket(portNumber);
-            System.out.println("Network is running and waiting for connections...\n");
+            System.out.println("Session established. Network is running and waiting for connections...\n");
 
             while (true) {
                 Socket clientSocket = serverSocket.accept();
@@ -105,12 +99,13 @@ public class Main {
                     index++;
                 }
 
-                System.out.println("Received client message [src = " + message[0] + ", dst = " + message[1] + ", filename = " + message[2] + "]\n");
-
-                if (message[0].equals("cleanCache")) {
-                    //ARP.cleanLocalCache(); // TODO: uncomment this line when method implemented
-                    System.out.println("ARP cache has been cleaned.");
+                if (!hasToBuildCache && message[0].equals("wipe")) {
+                    System.out.println("Received client message [command = " + message[0]+ "]\n");
+                    ARP.wipeCache();
+                    Thread.sleep(1000);
                     continue;
+                } else {
+                    System.out.println("Received client message [src = " + message[0] + ", dst = " + message[1] + ", filename = " + message[2] + "]\n");
                 }
 
                 if (hasToBuildCache) {
@@ -147,8 +142,8 @@ public class Main {
 
                 System.out.println("\n");
 
-                // log source and destination end host names
-                Logger.log("Source: " + sourceHostName + ", Destination: " + destinationEndHostName);
+                // log source, destination end host names, filename
+                Logger.log("Source: " + sourceHostName + ", Destination: " + destinationEndHostName + ", filename: " + filename);
 
                 String destinationIP;
 
@@ -182,7 +177,6 @@ public class Main {
 
                     ARP.updateCache(sourceER, destinationEndHostName, newEndHostIp, newEndHostMac);
                     destinationIP = newEndHostIp;
-
                 }
 
                 // Gets the routing number of each folder.
@@ -232,41 +226,11 @@ public class Main {
     /**
      * Prints introductory messages and asks the user for inputs on the number of runs, source and destination end host names.
      */
-    private static void displayIntro(List<String> filenames) throws IOException {
+    private static void displayIntro() throws IOException {
         sourceHostNames = new ArrayList<>();
         destinationEndHostNames = new ArrayList<>();
 
-        System.out.println(Colour.yellowBold("\n\n========================================= WELCOME TO THE IP SWITCH NETWORK - FOCUSSING ON HASHTABLES! ==========================================\n"));
-    }
-
-    /**
-     * Gets the number of runs the user wants to make through the network.
-     *
-     * @param input the scanner object to get user input
-     * @return the number of runs the user wants to make
-     */
-    private static int getNumberOfRuns(Scanner input) {
-        int numberOfRuns = 0;
-        boolean validInput = false;
-
-        while (!validInput) {
-            System.out.println("How many times would you like to run the network? Once or twice?(Input a positive integer):");
-            try {
-                numberOfRuns = input.nextInt();
-                input.nextLine();
-
-                if (numberOfRuns > 0) {
-                    validInput = true;
-                } else {
-                    System.out.println("Please enter a positive integer.");
-                }
-            } catch (java.util.InputMismatchException e) {
-                System.out.println("Invalid input. Please enter an integer.");
-                input.nextLine();
-            }
-        }
-
-        return numberOfRuns;
+        System.out.println(Colour.yellowBold("\n\n========================================= WELCOME TO THE IP SWITCH NETWORK - FOCUSSING ON GRAPHS! ==========================================\n"));
     }
 
 
@@ -337,7 +301,7 @@ public class Main {
         long totalBRS = System.currentTimeMillis() - startBRS;
         long broadcastTime = totalBRQ + totalBRS;
 
-        String logMessage = "Broadcast Protocol time taken for sourcing endHost " + destinationHostName + ": " + broadcastTime + "ms. LAN of end host: " + endHostFoundCity;
+        String logMessage = "[Broadcast Protocol] Time taken for sourcing endHost " + destinationHostName + ": " + broadcastTime + "ms. LAN of end host: " + endHostFoundCity;
         Logger.log(logMessage);
         System.out.println(Colour.yellow(logMessage));
         System.out.println(Colour.yellow("Time has been logged"));
@@ -360,13 +324,12 @@ public class Main {
         System.out.println("Building network and loading lan topology...");
 
         CSVReader.readCoordinatesCSV();
-
         Thread.sleep(2000);
 
         LOCAL_AREA_NETWORKS = new HashTable<>();
 
         // Create an entry to put into the inner map
-        HashTable.Entry<Integer, String> switchEntry1 = new HashTable.Entry(1, "nycFolder"); // id of the switch + folder for the switch. e.g 1, "nycFolder"
+        HashTable.Entry<Integer, String> switchEntry1 = new HashTable.Entry(1, "new york cityFolder"); // id of the switch + folder for the switch. e.g 1, "nycFolder"
         HashTable.Entry<Integer, String> switchEntry2 = new HashTable.Entry(2, "fresnoFolder");
         HashTable.Entry<Integer, String> switchEntry3 = new HashTable.Entry(3, "minneapolisFolder");
         HashTable.Entry<Integer, String> switchEntry4 = new HashTable.Entry(4, "austinFolder");

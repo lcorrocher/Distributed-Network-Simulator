@@ -3,13 +3,22 @@ package IPSwitch;
 import DataStructures.HashTable;
 import utils.Colour;
 import utils.FileUtils;
+import utils.Logger;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 public class ARP {
 
     private static final String IO_LANS_DIR = Main.getIO_DIR() + "lans/";
-
+    private static HashTable<String, HashTable<String, EndHost>> originalLocalEndHostTables;
+    private static Set<String> endHostFolderPaths = new HashSet<>();
     /**
      * hashtable to store the end host table for each edge router. Edge router ID -> end host name -> end host object
      * e.g. "172.21" -> "m" -> EndHost object
@@ -39,6 +48,7 @@ public class ARP {
                     //      "b" -> EndHost object
                     HashTable<String, EndHost> endHostTable = new HashTable<>();
 
+
                     // Read the file for this edge router ID from correct path e.g. austin/AUSTIN.txt
                     List<String[]> arpLines = FileUtils.readFile(IO_LANS_DIR + cityName.toLowerCase() + "/" + fileName);
                     int id = 1;
@@ -61,14 +71,81 @@ public class ARP {
                 }
             }
 
+            // deep copy the localEndHostTables to originalLocalEndHostTables
+            originalLocalEndHostTables = deepCopy(localEndHostTables);
+
+
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
+    /**
+     * Adds the end host folder path to the list of end host folder paths intending to be deleted.
+     * @param endHostFolder the end host folder path to be deleted. (Network.sendPacketsAndReassemble)
+     */
+    public static void addToEndHostFolderPaths(String endHostFolder) {
+        endHostFolderPaths.add(endHostFolder);
+    }
+
+    /**
+     * Wipes the ARP cache and returns it to its original state using a deep copy of the original ARP cache.
+     * @throws InterruptedException if the thread is interrupted
+     */
+    public static void wipeCache() throws InterruptedException {
+        Logger.log("\nWiping ARP cache...\n");
+        // TODO: method requires access to delete the end host folders, currently won't let me delete them.
+        // uncomment when fixed
+        //deleteEndHostFolders();
+        localEndHostTables = deepCopy(originalLocalEndHostTables);
+        System.out.println(Colour.yellow("EndHost paths have been deleted in file structure."));
+        Thread.sleep(2000);
+        System.out.println(Colour.yellow("ARP cache has been wiped and returned to original status. No foreign end hosts in cache.\n"));
+    }
+
+    /**
+     * Deletes the additional end host folders created from updating the ARP cache.
+     * Clears the set after deletion.
+     */
+    private static void deleteEndHostFolders() {
+        for (String endHostFolder : endHostFolderPaths) {
+            Path path = Paths.get(endHostFolder);
+            try {
+                if (Files.isWritable(path) && Files.isReadable(path) && Files.isExecutable(path)) {
+                    Files.deleteIfExists(path);
+                    System.out.println("Deleted folder: " + endHostFolder);
+                } else {
+                    System.err.println("Access denied to folder: " + endHostFolder);
+                }
+            } catch (IOException e) {
+                System.err.println("Failed to delete folder: " + endHostFolder);
+                e.printStackTrace();
+            }
+        }
+        endHostFolderPaths.clear();
+    }
+
+    /**
+     * Creates copy the original ARP cache to a new ARP cache. Used for wipeCache method to return to original cache localEndHostTable state.
+     * @param original the original ARP cache
+     * @return a deep copy of the original ARP cache
+     */
+    public static HashTable<String, HashTable<String, EndHost>> deepCopy(HashTable<String, HashTable<String, EndHost>> original) {
+        HashTable<String, HashTable<String, EndHost>> copy = new HashTable<>();
+        for (HashTable.Entry<String, HashTable<String, EndHost>> entry : original.entrySet()) {
+            HashTable<String, EndHost> copiedEndHostTable = new HashTable<>();
+            for (HashTable.Entry<String, EndHost> endHostEntry : entry.getValue().entrySet()) {
+                copiedEndHostTable.put(endHostEntry.getKey(), endHostEntry.getValue());
+            }
+            copy.put(entry.getKey(), copiedEndHostTable);
+        }
+        return copy;
+    }
+
     public static String getIoLansDir() {
         return IO_LANS_DIR;
     }
+
 
     public static void updateCache(String edgeRouterId, String endHostName, String endHostIp, String endHostMac) {
         localEndHostTables.get(edgeRouterId).put(endHostName, new EndHost(1, endHostName, endHostIp, endHostMac));

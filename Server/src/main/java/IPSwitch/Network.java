@@ -4,6 +4,7 @@ import DataStructures.HashTable;
 import DataStructures.Node;
 import utils.*;
 
+import java.io.File;
 import java.io.IOException;
 import java.nio.file.Paths;
 import java.util.ArrayList;
@@ -161,7 +162,7 @@ public class Network {
             //Thread.sleep(TRANSFER_RATE);
             counter++;
         }
-        System.out.println(Colour.yellowBold("Transfer complete.\nPlease check the destination folder for the transferred file. The log file contains details on processing speed.\n"));
+        System.out.println(Colour.yellowBold("\nTransfer complete.\nPlease check the destination folder for the transferred file. The log file contains details on processing speed.\n"));
     }
 
     public void runResponseWAN(String originCity) throws InterruptedException {
@@ -325,7 +326,7 @@ public class Network {
         }
         long timeTaken = System.currentTimeMillis() - start;
 
-        String logMessage = "Time taken for Broadcast Request: " + timeTaken + "ms";
+        String logMessage = "[Broadcast Request]  Time taken: " + timeTaken + "ms";
         Logger.log(logMessage);
         System.out.println(Colour.yellow(logMessage));
         System.out.println(Colour.yellow("Time has been logged"));
@@ -517,11 +518,10 @@ public class Network {
             data = PacketMethods.readPackets(packets1, true);
 
             // e.g. server/io/lans/austin/austinFolder
-            String cityFolder = ARP.getIoLansDir() + Main.getEndHostFoundCity().toLowerCase() + "/" + treeDestSwitch.getFolderPath();
 
-//            System.out.println("City Folder path: " + cityFolder);
-
-            String endHostFolder = cityFolder + "\\" + Main.getDestinationEndHostName();
+            String cityFolder = ARP.getIoLansDir() + File.separator + Main.getEndHostFoundCity().toLowerCase() + File.separator + treeDestSwitch.getFolderPath();
+            String endHostFolder = cityFolder + File.separator + Main.getDestinationEndHostName();
+            ARP.addToEndHostFolderPaths(endHostFolder);
 
             String goodPath = endHostFolder + "\\" + "good";
             String badPath = endHostFolder + "\\" + "bad";
@@ -535,7 +535,8 @@ public class Network {
             CreateOutputFile.createTextFile(Paths.get(goodPath, p.getFileName() + ".out").toString(), text);
 
             long timeTaken = System.currentTimeMillis() - start;
-            String logMessage = "Time taken for Message Transmission (msgId: " + p.getMsgId() + "): " + timeTaken + "ms";
+            String logMessage = "[Message Transmission] Time taken for file: " + timeTaken + "ms. \n" +
+                                "Number of Packets in file [" + p.getFileName() + "] (msgId: " + p.getMsgId() + "): " + numPacketsRecv;
             Logger.log(logMessage);
             System.out.println(Colour.yellow(logMessage));
             System.out.println(Colour.yellow("Time has been logged"));
