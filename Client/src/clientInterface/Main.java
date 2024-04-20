@@ -1,4 +1,4 @@
-package client;
+package clientInterface;
 
 import javafx.application.Application;
 import javafx.collections.FXCollections;
@@ -41,6 +41,9 @@ public class Main extends Application {
     public void start(Stage primaryStage) {
         primaryStage.setTitle("Client");
 
+        String hostName = "localhost";
+        int portNumber = 8080;
+
         GridPane grid = new GridPane();
         grid.setPadding(new Insets(20, 20, 20, 20));
         grid.setVgap(10);
@@ -79,15 +82,15 @@ public class Main extends Application {
         GridPane.setConstraints(startStopServerButton, 0, 4);
         startStopServerButton.setDisable(true);
 
-        Button sendButton = new Button("Send message across network");
+        Button sendButton = new Button("Send message request");
         GridPane.setConstraints(sendButton, 0, 3);
-        sendButton.setOnAction(e -> handleNormalMessage());
+        sendButton.setOnAction(e -> handleNormalMessage(hostName, portNumber));
         sendButton.setDisable(false);
 
         Button wipeButton = new Button("Wipe");
         GridPane.setConstraints(wipeButton, 1, 3);
         wipeButton.setDisable(true);
-        wipeButton.setOnAction(e -> handleWipeCommand());
+        wipeButton.setOnAction(e -> handleWipeCommand(hostName, portNumber));
 
         Button terminateButton = new Button("Terminate Client");
         GridPane.setConstraints(terminateButton, 0, 5);
@@ -100,7 +103,7 @@ public class Main extends Application {
 
         clearLogButton = new Button("Clear Log");
         GridPane.setConstraints(clearLogButton, 1, 5);
-        clearLogButton.setOnAction(e -> handleClearLog());
+        clearLogButton.setOnAction(e -> handleClearLog(hostName, portNumber));
 
         grid.getChildren().addAll(srcLabel, srcBox, dstLabel, dstBox, msgLabel, msgBox, sendButton, wipeButton, terminateButton, viewLogsButton, clearLogButton, startStopServerButton);
 
@@ -111,9 +114,7 @@ public class Main extends Application {
         primaryStage.show();
     }
 
-    private void handleWipeCommand() {
-        String hostName = "localhost";
-        int portNumber = 8081;
+    private void handleWipeCommand(String hostName, int portNumber) {
 
         try {
             Socket socket = new Socket(hostName, portNumber);
@@ -128,14 +129,11 @@ public class Main extends Application {
         }
     }
 
-    private void handleNormalMessage() {
+    private void handleNormalMessage(String hostName, int portNumber) {
         if (srcBox.getValue() == null || dstBox.getValue() == null || msgBox.getValue() == null) {
             new Alert(Alert.AlertType.ERROR, "Please ensure values for source, destination, and message before sending").showAndWait();
             return;
         }
-
-        String hostName = "localhost";
-        int portNumber = 8081;
 
         try {
             Socket socket = new Socket(hostName, portNumber);
@@ -163,7 +161,7 @@ public class Main extends Application {
 
         VBox.setVgrow(textArea, Priority.ALWAYS);
 
-        // new thread that watches the log file for changes and updates the text area
+        // new thread that watches the log file for changes and updates text area
         new Thread(() -> {
             try {
                 WatchService watchService = FileSystems.getDefault().newWatchService();
@@ -200,9 +198,7 @@ public class Main extends Application {
         logStage.show();
     }
 
-    private void handleClearLog() {
-        String hostName = "localhost";
-        int portNumber = 8081;
+    private void handleClearLog(String hostName, int portNumber) {
 
         try {
             Socket socket = new Socket(hostName, portNumber);
@@ -216,5 +212,4 @@ public class Main extends Application {
             e.printStackTrace();
         }
     }
-
 }

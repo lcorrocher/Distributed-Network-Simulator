@@ -3,6 +3,8 @@ package IPSwitch;
 import DataStructures.Node;
 import DataStructures.NodeType;
 
+import java.util.List;
+
 /**
  * IPSwitch.Router class inherits from DataStructures.Node class and represents a router in the network.
  */
@@ -31,6 +33,8 @@ public class Router extends Node {
     public String toString() {
         return "ROUTER: " +  getName() + String.format(", Coordinates: %s", coordinates);
     }
+
+
 
 
 

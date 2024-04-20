@@ -14,7 +14,7 @@ import java.util.NoSuchElementException;
  * Each node has a unique id and name. The id, name and type are set in the constructor and cannot be changed.
  */
 
-public abstract class Node implements gNode {
+public abstract class Node {
 
     private final int id;
     private final String name;
@@ -88,12 +88,10 @@ public abstract class Node implements gNode {
         return type;
     }
 
-    @Override
     public String getName() {
         return name;
     }
 
-    @Override
     public int getId() {
         return id;
     }

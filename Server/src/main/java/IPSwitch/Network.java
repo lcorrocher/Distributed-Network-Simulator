@@ -632,6 +632,7 @@ public class Network {
                 for (int i = 1; i < entry.length; i++) {
                     String cityName = entry[i].split("\\|")[0];
                     int routerId = Integer.parseInt(entry[i].split("\\|")[1]);
+                    // e.g. routerId = 1, cityName = "FRESNO"
                     double nextHopLength = Double.parseDouble(entry[i].split("\\|")[2]);
                     Coordinates coordinates = cityCoordinates.get(cityName);
                     Router r = new Router(routerId, cityName, coordinates);

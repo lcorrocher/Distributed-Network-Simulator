@@ -15,3 +15,83 @@ Source: a, Destination: p, filename: taken.txt
 [Broadcast Protocol] Time taken for sourcing endHost p: 21324ms. LAN of end host: NEW YORK CITY
 [Message Transmission] Time taken for file: 3784ms. 
 Number of Packets in file [taken.txt] (msgId: 7xRwctpMABk9tVXO): 596
+Transfer 1...
+
+Transfer 1...
+
+Source: a, Destination: p, filename: taken.txt
+Transfer 1...
+
+Transfer 1...
+
+Source: a, Destination: p, filename: taken.txt
+[Broadcast Request]  Time taken: 9193ms
+[Broadcast Protocol] Time taken for sourcing endHost p: 21447ms. LAN of end host: NEW YORK CITY
+[Message Transmission] Time taken for file: 4514ms. 
+Number of Packets in file [taken.txt] (msgId: k69aMVFMUQwPkwv0): 596
+
+Transfer 2...
+
+Source: a, Destination: p, filename: taken.txt
+
+Transfer 3...
+
+Source: a, Destination: p, filename: taken.txt
+
+Transfer 4...
+
+Source: a, Destination: o, filename: taken.txt
+Transfer 1...
+
+Source: a, Destination: p, filename: taken.txt
+[Broadcast Request]  Time taken: 0ms
+[Broadcast Protocol] Time taken for sourcing endHost p: 12277ms. LAN of end host: NEW YORK CITY
+Transfer 1...
+
+Source: a, Destination: p, filename: taken.txt
+[Broadcast Request]  Time taken: 1ms
+[Broadcast Protocol] Time taken for sourcing endHost p: 12235ms. LAN of end host: NEW YORK CITY
+Transfer 1...
+
+Source: a, Destination: p, filename: taken.txt
+[Broadcast Request]  Time taken: 0ms
+[Broadcast Protocol] Time taken for sourcing endHost p: 12214ms. LAN of end host: NEW YORK CITY
+Transfer 1...
+
+Source: a, Destination: p, filename: taken.txt
+[Broadcast Request]  Time taken: 9166ms
+[Broadcast Protocol] Time taken for sourcing endHost p: 21400ms. LAN of end host: NEW YORK CITY
+[Message Transmission] Time taken for file: 4358ms. 
+Number of Packets in file [taken.txt] (msgId: uVcs6ggnnKNaz280): 596
+
+Transfer 2...
+
+Source: a, Destination: p, filename: taken.txt
+
+Transfer 3...
+
+Source: a, Destination: o, filename: taken.txt
+Transfer 1...
+
+Source: a, Destination: p, filename: taken.txt
+[Broadcast Request]  Time taken: 9145ms
+[Broadcast Protocol] Time taken for sourcing endHost p: 21303ms. LAN of end host: NEW YORK CITY
+[Message Transmission] Time taken for file: 3329ms. 
+Number of Packets in file [taken.txt] (msgId: X9R3AD5Pur9MWxuP): 596
+
+Transfer 2...
+
+Source: a, Destination: p, filename: taken.txt
+[Message Transmission] Time taken for file: 3303ms. 
+Number of Packets in file [taken.txt] (msgId: SFeNitWVKDmAyoc0): 596
+Transfer 1...
+
+Source: a, Destination: p, filename: taken.txt
+[Broadcast Request]  Time taken: 9156ms
+[Broadcast Protocol] Time taken for sourcing endHost p: 21328ms. LAN of end host: NEW YORK CITY
+[Message Transmission] Time taken for file: 3380ms. 
+Number of Packets in file [taken.txt] (msgId: 1QAFnayJYDN51CNf): 596
+
+Transfer 2...
+
+Source: a, Destination: p, filename: taken.txt

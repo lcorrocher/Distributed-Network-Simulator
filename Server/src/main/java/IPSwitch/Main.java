@@ -31,7 +31,7 @@ public class Main {
     /**
      * The network object to run the simulation.
      */
-    private static Network net;
+    private static Network usaNetwork;
     private static String sourceHostName;
     private static String destinationEndHostName;
     private static String filename;
@@ -78,7 +78,7 @@ public class Main {
     private static void runNetworkServer(String filenamesFilePath, int numberOfTransfers) throws InterruptedException {
 
         int portNumber = 8080;
-        boolean hasToBuildCache = true;
+        boolean isFirstClient = true;
         int clientId = 1;
 
         try {
@@ -99,7 +99,7 @@ public class Main {
                     index++;
                 }
 
-                if (!hasToBuildCache && message[0].equals("wipe")) {
+                if (!isFirstClient && message[0].equals("wipe")) {
                     System.out.println("Received client message [command = " + message[0]+ "]\n");
                     ARP.wipeCache();
                     Thread.sleep(1000);
@@ -108,14 +108,17 @@ public class Main {
                     System.out.println("Received client message [src = " + message[0] + ", dst = " + message[1] + ", filename = " + message[2] + "]\n");
                 }
 
-                if (hasToBuildCache) {
+                if (isFirstClient) {
                     // TODO: setupNetwork in here I think but didn't run last time for second iteration
-
+//                    setupNetwork(numberOfTransfers);
+//                    Thread.sleep(2000);
                     System.out.println(Colour.yellow("Building ARP cache..."));
                     ARP.createLocalCache();
                     Thread.sleep(1000);
                     System.out.println(Colour.yellow("Processing FIRST REQUEST...\n"));
                     Logger.log("Transfer 1...\n");
+
+                    isFirstClient = false;
                 } else {
                     System.out.println(Colour.yellowBold("\n\nENTERING NEXT TRANSFER REQUEST..."));
                     Thread.sleep(2000);
@@ -126,6 +129,7 @@ public class Main {
                 sourceHostName = message[0];
                 destinationEndHostName = message[1];
                 filename = message[2];
+
 
                 Thread.sleep(1000);
                 setupNetwork(numberOfTransfers);
@@ -194,21 +198,20 @@ public class Main {
                 List<Packet> packets = PacketMethods.writePackets(src, dest, data1, 16, filename, MessageType.TEXT, destinationIP);
 
                 // Adds the packets to the first switch. All have same srcNetId and destNetId.
-                PacketMethods.addPacketsToStartSwitch(net, packets);
+                PacketMethods.addPacketsToStartSwitch(usaNetwork, packets);
 
                 // if local, runLAN, else (not local) runWAN
                 if (src == dest) {
                     // Starts the main loop.
-                    net.runLAN();
+                    usaNetwork.runLAN();
                 } else {
                     // Starts the main loop.
-                    net.runWAN();
+                    usaNetwork.runWAN();
                 }
 
                 // Close connections
                 in.close();
                 clientSocket.close();
-                hasToBuildCache = false;
                 clientId++;
             }
         } catch (IOException e) {
@@ -290,8 +293,8 @@ public class Main {
      */
     private static EndHost initiateBroadcastProtocol(String sourceER, String destinationHostName) throws InterruptedException {
         long startBRQ = System.currentTimeMillis(); // start time for broadcast request
-        PacketMethods.sendMultiplePackets(edgeRouterId, LOCAL_AREA_NETWORKS, sourceER, net);
-        EndHost targetEndHost = net.runBroadcastWAN(destinationHostName, sourceER);
+        PacketMethods.sendMultiplePackets(edgeRouterId, LOCAL_AREA_NETWORKS, sourceER, usaNetwork);
+        EndHost targetEndHost = usaNetwork.runBroadcastWAN(destinationHostName, sourceER);
         long totalBRQ = System.currentTimeMillis() - startBRQ;
 
         endHostFoundCity = findEdgeRouterId(destinationHostName);
@@ -310,8 +313,8 @@ public class Main {
     }
 
     private static void returnToOriginEdgeRouter(String endHostFoundCity, String originCity) throws InterruptedException {
-        PacketMethods.createBroadcastResponsePacket(edgeRouterId, LOCAL_AREA_NETWORKS, endHostFoundCity, originCity, net);
-        net.runResponseWAN(originCity);
+        PacketMethods.createBroadcastResponsePacket(edgeRouterId, LOCAL_AREA_NETWORKS, endHostFoundCity, originCity, usaNetwork);
+        usaNetwork.runResponseWAN(originCity);
     }
 
     /**
@@ -388,7 +391,7 @@ public class Main {
 //        }
 
 
-        net = new Network(LOCAL_AREA_NETWORKS, filesToTransfer);
+        usaNetwork = new Network(LOCAL_AREA_NETWORKS, filesToTransfer);
     }
 
     /**

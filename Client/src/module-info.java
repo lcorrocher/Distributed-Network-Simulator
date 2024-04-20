@@ -1,2 +1,6 @@
-module $MODULE_NAME$ {
+module client {
+    requires javafx.controls;
+    requires javafx.fxml;
+
+    opens clientInterface;
 }
