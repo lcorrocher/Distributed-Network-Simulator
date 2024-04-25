@@ -1,4 +1,4 @@
 #!/usr/bin/env bash
 
-CLIENT_JAR=.out/artifacts/client_jar2/client.jar
+CLIENT_JAR=.out/artifacts/client_jar_gui/client.jar
 java -jar "CLIENT_JAR"
