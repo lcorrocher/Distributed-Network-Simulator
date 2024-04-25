@@ -4,6 +4,14 @@
 
 * JDK 20.x.x.
 * IDE: Intellij/Eclipse
+* Maven 3.x.x.
+* JavaFx 21/22
+
+### Configuration
+
+- add javafx-sdk/lib path to the libraries in the project structure.
+- add the javaFx-sdk/lib jar files to the module path 'client' in the project structure.
+- reload maven project to update the dependencies.
 
 # Running the Application
 
@@ -11,24 +19,34 @@ This repository contains the necessary files to run the application. Follow the 
 
 ## Server 
 
-run the server(network) first by running the main method in the Server class. The server will start listening on port 8080 and run the network.
-Note: The client will not run if the server is not running.
+run the server(network) first by running the `main` method in the Server class. The server will start listening on port 8080 and run the network.
+
+**Note: The client will not run if the server is not running.**
 
 ## Client
+
+### ClientGUI (Recommended)
+
+To run the clientGUI, run the `main` method in the ClientGUI class. The GUI will open and you can input the source endHost name, the destination endHost name, and the message file name.
+Another option is to run the clientGUI jar file. To do this, run the following command in another terminal:
+
+**JavaFx is required to run the GUI. If you encounter any issues, please refer to the [JavaFX Documentation](https://openjfx.io/openjfx-docs/).**
+
+
+### ClientCLI (Alternative)
 
 The client takes in 3 arguments: the source endHost name, the destination endHost name, and the message file name. 
 The client will read the message from the file and send it to the destination endHost through the network.
 
 At this moment, to run the client without cleaning the cache, you can run the following command in another terminal:
 ```bash
-java -jar "out/artifacts/IP_Client_jar/IP Client.jar" "a" "p" "beemovie.txt"
+java -jar "out/artifacts/client_jar_cli/client.jar" "a" "p" "beemovie.txt"
 ```
 
 To run the client with cleaning the cache, you can run the following command in another terminal:
 ```bash
-java -jar "out/artifacts/IP_Client_jar/IP Client.jar" "cleanCache" "a" "p" "beemovie.txt"
+java -jar "out/artifacts/client_jar_cli/client.jar" "cleanCache"
 ```
-Note: cleanCache isn't implemented yet, so it doesn't do anything.
 
 
 ## Cloning the Repository
@@ -77,7 +95,6 @@ To run the application on Unix-based systems (Linux, macOS), follow these steps:
    chmod +x run.sh # make the script executable
    ./run.sh # run the script which will execute the application
    ```
-
 
 
 ## Directory Structure

@@ -25,6 +25,11 @@ import java.net.Socket;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
+/**
+ * ClientGUI class to create a GUI for the client using JavaFX, which connects to the server via sockets on port localhost:8080.
+ * The GUI also allows the user to select the source, destination, and message to send.
+ * Buttons are created to send messages across the network, wipe the network, and view logs.
+ */
 public class ClientGUI extends Application {
 
     private ComboBox<String> srcBox;
@@ -113,7 +118,7 @@ public class ClientGUI extends Application {
 
     private void handleWipeCommand() {
         String hostName = "localhost";
-        int portNumber = 8081;
+        int portNumber = 8080;
 
         try {
             Socket socket = new Socket(hostName, portNumber);
@@ -135,7 +140,7 @@ public class ClientGUI extends Application {
         }
 
         String hostName = "localhost";
-        int portNumber = 8081;
+        int portNumber = 8080;
 
         try {
             Socket socket = new Socket(hostName, portNumber);

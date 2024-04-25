@@ -21,3 +21,16 @@ Transfer 1...
 
 Transfer 1...
 
+Transfer 1...
+
+Source: a, Destination: p, filename: taken.txt
+[Broadcast Request]  Time taken: 9037ms
+[Broadcast Protocol] Time taken for sourcing endHost p: 21170ms. LAN of end host: NEW YORK CITY
+[Message Transmission] Time taken for file: 4069ms. 
+Number of Packets in file [taken.txt] (msgId: cNahSdMxXNfmJDwA): 596
+
+Transfer 2...
+
+Source: a, Destination: p, filename: taken.txt
+[Message Transmission] Time taken for file: 3724ms. 
+Number of Packets in file [taken.txt] (msgId: vZ5wDkEdqlc62gko): 596

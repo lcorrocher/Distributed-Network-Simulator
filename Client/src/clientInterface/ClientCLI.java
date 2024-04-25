@@ -5,6 +5,11 @@ import java.io.PrintWriter;
 import java.net.Socket;
 import java.net.UnknownHostException;
 
+/**
+ * ClientCLI class to create a command line interface for the client, which connects to the server via sockets on port localhost:8080.
+ * The CLI allows the user to send messages across the network and wipe the network.
+ * Recommended to run jar to use CLI. Parameters are <src> <dst> <filename>.
+ */
 public class ClientCLI {
     public static void main(String[] args) {
         if (args.length == 1 && args[0].equals("wipe")) {
