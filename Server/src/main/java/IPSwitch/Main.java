@@ -291,7 +291,7 @@ public class Main {
     private static EndHost initiateBroadcastProtocol(String sourceER, String destinationHostName) throws InterruptedException {
         long startBRQ = System.currentTimeMillis(); // start time for broadcast request
         PacketMethods.sendMultiplePackets(edgeRouterId, LOCAL_AREA_NETWORKS, sourceER, net);
-        EndHost targetEndHost = net.runBroadcastWAN(destinationHostName, sourceER);
+        EndHost targetEndHost = net.runBroadcastWAN(destinationHostName);
         long totalBRQ = System.currentTimeMillis() - startBRQ;
 
         endHostFoundCity = findEdgeRouterId(destinationHostName);

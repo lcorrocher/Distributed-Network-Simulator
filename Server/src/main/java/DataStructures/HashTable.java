@@ -16,7 +16,6 @@ public class HashTable<K, V> {
         size = 0;
     }
 
-
     public void put(K key, V value) {
         if (key == null) {
             throw new IllegalArgumentException("Key cannot be null. Please provide a valid key");

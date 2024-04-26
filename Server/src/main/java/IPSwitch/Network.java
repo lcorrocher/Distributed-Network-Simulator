@@ -1,5 +1,6 @@
 package IPSwitch;
 
+import DataStructures.AmGraph;
 import DataStructures.HashTable;
 import DataStructures.Node;
 import utils.*;
@@ -7,10 +8,7 @@ import utils.*;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.NoSuchElementException;
-import java.util.Objects;
+import java.util.*;
 
 import static utils.CSVReader.cityCoordinates;
 import static utils.LoadingBar.printDynamicLoadingBar;
@@ -22,6 +20,17 @@ import static utils.LoadingBar.printDynamicLoadingBar;
  */
 public class Network {
     private final int TRANSFER_RATE = 0;
+
+    /**
+     * maps the city name to the index in the adjacency matrix.
+     * used for graph traversal algorithms, primarily Dijkstra's algorithm.
+     */
+    private Map<String, Integer> cityToIndexMap;
+
+    /**
+     * Hash Table of router and switch nodes in the network. The key is the name of the node and the value is the node object. Used for graph traversal.
+     */
+    private final HashMap<String, Node> nodesByCityName;
     public HashTable<Integer, Switch> switches;
     //private HashTable<Integer, IPSwitch.Router> routers;
     // create HashTable of string, integer, IPSwitch.Router
@@ -60,6 +69,17 @@ public class Network {
         return netIdTable;
     }
 
+    /**
+     * Map which generates the city to index map used for graph traversal algorithms adjacency matrix.
+     */
+    public void generateCityToIndexMap() {
+        cityToIndexMap = new HashMap<>();
+        int index = 0;
+        for (String cityName : nodesByCityName.keySet()) {
+            cityToIndexMap.put(cityName, index);
+            index++;
+        }
+    }
 
     /**
      * gets the route name from the netId. e.g. 1 -> "fresnoToNyc"
@@ -98,6 +118,28 @@ public class Network {
     }
 */
 
+    private void instantiateGraph() {
+
+        System.out.println(Colour.yellow("Creating the usaGraph using adjacency matrix...\n"));
+        AmGraph usaGraph = new AmGraph(nodesByCityName);
+
+        usaGraph.addEdge("FRESNO", "CASPER");
+        usaGraph.addEdge("FRESNO", "TOPEKA");
+        usaGraph.addEdge("AUSTIN", "CASPER");
+        usaGraph.addEdge("AUSTIN", "TOPEKA");
+        usaGraph.addEdge("AUSTIN", "CHICAGO");
+        usaGraph.addEdge("NEW YORK CITY", "TOPEKA");
+        usaGraph.addEdge("NEW YORK CITY", "CHICAGO");
+        usaGraph.addEdge("MINNEAPOLIS", "CASPER");
+        usaGraph.addEdge("MINNEAPOLIS", "TOPEKA");
+        usaGraph.addEdge("MINNEAPOLIS", "CHICAGO");
+        usaGraph.addEdge("CASPER", "TOPEKA");
+        usaGraph.addEdge("CASPER", "CHICAGO");
+        usaGraph.addEdge("TOPEKA", "CHICAGO");
+
+        usaGraph.printGraph();
+    }
+
 
     /**
      * Method to run the network at a national scale.
@@ -121,6 +163,7 @@ public class Network {
 //            if (counter % 10 == 0) {
 //                showTopology();
 //            }
+
 
 
             for (HashTable.Entry<Integer, Switch> entry : switches.entrySet()) {
@@ -253,7 +296,7 @@ public class Network {
         }
     }
 
-    public EndHost runBroadcastWAN(String destinationHostName, String sourceER) throws InterruptedException {
+    public EndHost runBroadcastWAN(String destinationHostName) throws InterruptedException {
         System.out.println("\n\nBroadcasting request packets to all edge routers...");
         Thread.sleep(2000);
         System.out.println("Broadcast request packets will be routed through WAN...");
@@ -290,14 +333,6 @@ public class Network {
                 } catch (NoSuchElementException e) {
                     continue; // queue is empty
                 }
-
-            /*// Can be removed later - Luca
-            String cityNameStr = Main.getCityNameFromSwitchId(entry.getValue().getName());
-            if (cityNameStr.equals(sourceER)) {
-                System.out.println("Ignoring source switch: " + cityNameStr);
-                Thread.sleep(2000);
-                continue;
-            }*/
 
                 Packet p = currentRouter.top();
 
@@ -635,6 +670,7 @@ public class Network {
                     double nextHopLength = Double.parseDouble(entry[i].split("\\|")[2]);
                     Coordinates coordinates = cityCoordinates.get(cityName);
                     Router r = new Router(routerId, cityName, coordinates);
+                    nodesByCityName.put(cityName, r);
 
                     // TODO: REMOVE Thread and System.out.println
 //                    System.out.println(r + routerId + coordinates);
@@ -674,6 +710,8 @@ public class Network {
             System.out.println();
         }
         Thread.sleep(3000);
+
+        instantiateGraph();
     }
 
     /**
@@ -685,6 +723,7 @@ public class Network {
      */
     public Network(HashTable<String, HashTable.Entry<Integer, String>> localAreaNetworks,int filesToTransfer) throws IOException, InterruptedException {
         // create n switches
+        this.nodesByCityName = new HashTable<>();
         switches = new HashTable<>();
         routers = new HashTable<>();
         topology = new HashTable<>();
@@ -697,11 +736,12 @@ public class Network {
 
         for (HashTable.Entry<String, HashTable.Entry<Integer, String>> entry : localAreaNetworks.entrySet()) {
             String networkIP = entry.getKey();
-            String cityNameSt = Main.getCityNameFromSwitchId(networkIP);
+            String cityName = Main.getCityNameFromSwitchId(networkIP);
             Integer networkId = entry.getValue().getKey();
             String folderPath = entry.getValue().getValue();
-            Coordinates coordinates = cityCoordinates.get(cityNameSt);
+            Coordinates coordinates = cityCoordinates.get(cityName);
             Switch s = new Switch(networkId, networkIP, folderPath, coordinates);
+            nodesByCityName.put(cityName, s);
 
             // TODO: REMOVE Thread and System.out.println
             System.out.println(s);

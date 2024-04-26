@@ -30,7 +30,11 @@ public class Switch extends Node {
 
     @Override
     public String toString() {
-        return "SWITCH: " + Main.getCityNameFromSwitchId(getName()) + String.format(", Coordinates: %s", coordinates);
+        return "SWITCH: " + getCityName() + String.format(", Coordinates: %s", coordinates);
+    }
+
+    public String getCityName() {
+        return Main.getCityNameFromSwitchId(getName());
     }
 
     /**
