@@ -73,6 +73,10 @@ public class AmGraph {
         }
     }
 
+    public Map<Node, Map<Node, Double>> getAdjacencyMatrix() {
+        return adjacencyMatrix;
+    }
+
     public void printGraph() {
         for (HashMap.Entry<Node, Map<Node, Double>> entry : adjacencyMatrix.entrySet()) {
             Node node1 = entry.getKey();

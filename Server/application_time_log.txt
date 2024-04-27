@@ -43,3 +43,50 @@ Transfer 1...
 
 Transfer 1...
 
+Transfer 1...
+
+Source: a, Destination: p, filename: taken.txt
+[Broadcast Request]  Time taken: 9179ms
+[Broadcast Protocol] Time taken for sourcing endHost p: 21442ms. LAN of end host: NEW YORK CITY
+Transfer 1...
+
+Source: a, Destination: p, filename: taken.txt
+[Broadcast Request]  Time taken: 9168ms
+[Broadcast Protocol] Time taken for sourcing endHost p: 21420ms. LAN of end host: NEW YORK CITY
+[Dijkstra's algorithm] Time taken to execute: 3
+Transfer 1...
+
+Source: a, Destination: p, filename: taken.txt
+[Broadcast Request]  Time taken: 9178ms
+[Broadcast Protocol] Time taken for sourcing endHost p: 21429ms. LAN of end host: NEW YORK CITY
+[Dijkstra's algorithm] Time taken to execute: 3
+Transfer 1...
+
+Source: a, Destination: p, filename: taken.txt
+[Broadcast Request]  Time taken: 9162ms
+[Broadcast Protocol] Time taken for sourcing endHost p: 21403ms. LAN of end host: NEW YORK CITY
+[Dijkstra's algorithm] Time taken to execute: 8
+Transfer 1...
+
+Source: a, Destination: p, filename: taken.txt
+[Broadcast Request]  Time taken: 9168ms
+[Broadcast Protocol] Time taken for sourcing endHost p: 21412ms. LAN of end host: NEW YORK CITY
+[Dijkstra's algorithm] Time taken to execute: 4
+Transfer 1...
+
+Source: a, Destination: p, filename: taken.txt
+[Broadcast Request]  Time taken: 9169ms
+[Broadcast Protocol] Time taken for sourcing endHost p: 21392ms. LAN of end host: NEW YORK CITY
+[Dijkstra's algorithm] Time taken to execute: 5
+Transfer 1...
+
+Source: a, Destination: p, filename: taken.txt
+[Broadcast Request]  Time taken: 9159ms
+[Broadcast Protocol] Time taken for sourcing endHost p: 21378ms. LAN of end host: NEW YORK CITY
+[Dijkstra's algorithm] Time taken to execute: 5
+Transfer 1...
+
+Source: a, Destination: p, filename: taken.txt
+[Broadcast Request]  Time taken: 9174ms
+[Broadcast Protocol] Time taken for sourcing endHost p: 21388ms. LAN of end host: NEW YORK CITY
+[Dijkstra's algorithm] Time taken to execute: 6

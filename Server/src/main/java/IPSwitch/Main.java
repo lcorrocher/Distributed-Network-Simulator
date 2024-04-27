@@ -142,7 +142,6 @@ public class Main {
 
                 System.out.println("\n");
 
-                // log source, destination end host names, filename
                 Logger.log("Source: " + sourceHostName + ", Destination: " + destinationEndHostName + ", filename: " + filename);
 
                 String destinationIP;
@@ -171,6 +170,7 @@ public class Main {
 
                     Thread.sleep(2000);
 
+                    // TODO: change EndHost toString to include city
                     System.out.println("\n\nNew end host acquired: " + newEndHost);
                     System.out.println("Updating local end host cache with destination end host [" + destinationEndHostName + "] for future queries...\n\n");
                     Thread.sleep(2000);
@@ -185,6 +185,7 @@ public class Main {
                 int dest = locations[1];
                 System.out.println(sourceIP);
                 System.out.println(src);
+
                 String folder = LOCAL_AREA_NETWORKS.get(keepUpToSecondPeriod(sourceIP)).getValue();
 
                 String data = TxtToBinary.extractFromFile(filePath).toString();
@@ -202,7 +203,7 @@ public class Main {
                     net.runLAN();
                 } else {
                     // Starts the main loop.
-                    net.runWAN();
+                    net.runWAN(sourceER, getEndHostFoundCity());
                 }
 
                 // Close connections

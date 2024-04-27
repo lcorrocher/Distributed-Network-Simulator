@@ -9,6 +9,7 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Paths;
 import java.util.*;
+import java.util.stream.Collectors;
 
 import static utils.CSVReader.cityCoordinates;
 import static utils.LoadingBar.printDynamicLoadingBar;
@@ -19,8 +20,8 @@ import static utils.LoadingBar.printDynamicLoadingBar;
  * The network has a transfer rate, a Hash Table of switches, a table of routers, a map of the topology, and a number of files to transfer.
  */
 public class Network {
+    private AmGraph usaGraph;
     private final int TRANSFER_RATE = 0;
-
     /**
      * maps the city name to the index in the adjacency matrix.
      * used for graph traversal algorithms, primarily Dijkstra's algorithm.
@@ -121,7 +122,7 @@ public class Network {
     private void instantiateGraph() {
 
         System.out.println(Colour.yellow("Creating the usaGraph using adjacency matrix...\n"));
-        AmGraph usaGraph = new AmGraph(nodesByCityName);
+        this.usaGraph = new AmGraph(nodesByCityName);
 
         usaGraph.addEdge("FRESNO", "CASPER");
         usaGraph.addEdge("FRESNO", "TOPEKA");
@@ -147,7 +148,7 @@ public class Network {
      * @throws InterruptedException If the thread is interrupted.
      * @throws IOException          If the file is not found or cannot be read.
      */
-    public void runWAN() throws InterruptedException, IOException {
+    public void runWAN(String sourceER, String destER) throws InterruptedException, IOException {
         System.out.println("\n \nDestination end host located in WIDER AREA NETWORK (WAN)...");
         Thread.sleep(2000);
         System.out.println("Packets will be routed through WAN...");
@@ -160,11 +161,12 @@ public class Network {
         while (filesToTransfer > 0) {
             System.out.println("=====================================");
 
-//            if (counter % 10 == 0) {
-//                showTopology();
-//            }
+            generateCityToIndexMap();
+            System.out.println("City to Index Map: " + cityToIndexMap);
+            IPSwitch.Paths paths = new IPSwitch.Paths(cityToIndexMap, nodesByCityName);
+            List<Node> shortestPath = paths.dijkstra(usaGraph.getAdjacencyMatrix(), sourceER, destER);
 
-
+            System.exit(0);
 
             for (HashTable.Entry<Integer, Switch> entry : switches.entrySet()) {
                 List<Double> nextHopsList = topology.get(entry.getKey()).getKey();
@@ -672,8 +674,6 @@ public class Network {
                     Router r = new Router(routerId, cityName, coordinates);
                     nodesByCityName.put(cityName, r);
 
-                    // TODO: REMOVE Thread and System.out.println
-//                    System.out.println(r + routerId + coordinates);
                     System.out.println(r);
                     Thread.sleep(2000);
 
@@ -692,6 +692,8 @@ public class Network {
                     topology.get(netId).getValue().add(r);
                 }
             }
+
+            // find route
         }
         System.out.println("\n" + netIdTable.entrySet().size() + " routes built.");
 
@@ -723,7 +725,7 @@ public class Network {
      */
     public Network(HashTable<String, HashTable.Entry<Integer, String>> localAreaNetworks,int filesToTransfer) throws IOException, InterruptedException {
         // create n switches
-        this.nodesByCityName = new HashTable<>();
+        this.nodesByCityName = new HashMap<>();
         switches = new HashTable<>();
         routers = new HashTable<>();
         topology = new HashTable<>();

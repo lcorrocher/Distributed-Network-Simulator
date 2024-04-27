@@ -35,6 +35,7 @@ public class ClientGUI extends Application {
     private ComboBox<String> srcBox;
     private ComboBox<String> dstBox;
     private ComboBox<String> msgBox;
+    private ComboBox<String> algorithmBox;
     private Button viewLogsButton;
     private Button clearLogButton;
 
@@ -54,6 +55,12 @@ public class ClientGUI extends Application {
         ObservableList<String> letters = FXCollections.observableArrayList(
                 IntStream.rangeClosed('a', 'p').mapToObj(i -> "" + (char) i).collect(Collectors.toList())
         );
+
+        ObservableList<String> algorithms = FXCollections.observableArrayList("Dijkstra", "A*");
+        Label algorithmLabel = new Label("Algorithm:");
+        GridPane.setConstraints(algorithmLabel, 0, 3);
+        algorithmBox = new ComboBox<>(algorithms);
+        GridPane.setConstraints(algorithmBox, 1, 3);
 
         Label srcLabel = new Label("Source:");
         GridPane.setConstraints(srcLabel, 0, 0);
@@ -81,37 +88,37 @@ public class ClientGUI extends Application {
         GridPane.setConstraints(msgBox, 1, 2);
 
         Button startStopServerButton = new Button("Start Server");
-        GridPane.setConstraints(startStopServerButton, 0, 4);
+        GridPane.setConstraints(startStopServerButton, 0, 5);
         startStopServerButton.setDisable(true);
 
         Button sendButton = new Button("Send message across network");
-        GridPane.setConstraints(sendButton, 0, 3);
+        GridPane.setConstraints(sendButton, 0, 4);
         sendButton.setOnAction(e -> handleNormalMessage());
         sendButton.setDisable(false);
 
         Button wipeButton = new Button("Wipe");
-        GridPane.setConstraints(wipeButton, 1, 3);
+        GridPane.setConstraints(wipeButton, 1, 4);
         wipeButton.setDisable(true);
         wipeButton.setOnAction(e -> handleWipeCommand());
 
         Button terminateButton = new Button("Terminate Client");
-        GridPane.setConstraints(terminateButton, 0, 5);
+        GridPane.setConstraints(terminateButton, 0, 6);
         terminateButton.setOnAction(e -> System.exit(0));
 
         viewLogsButton = new Button("View Logs");
-        GridPane.setConstraints(viewLogsButton, 1, 4);
+        GridPane.setConstraints(viewLogsButton, 1, 5);
         viewLogsButton.setDisable(false);
         viewLogsButton.setOnAction(e -> viewLogs());
 
         clearLogButton = new Button("Clear Log");
-        GridPane.setConstraints(clearLogButton, 1, 5);
+        GridPane.setConstraints(clearLogButton, 1, 6);
         clearLogButton.setOnAction(e -> handleClearLog());
 
-        grid.getChildren().addAll(srcLabel, srcBox, dstLabel, dstBox, msgLabel, msgBox, sendButton, wipeButton, terminateButton, viewLogsButton, clearLogButton, startStopServerButton);
+        grid.getChildren().addAll(srcLabel, srcBox, dstLabel, dstBox, msgLabel, msgBox, sendButton, wipeButton, terminateButton, viewLogsButton, clearLogButton, algorithmLabel, algorithmBox, startStopServerButton);
 
         //TODO: create action which starts sever and enables send button. It had a port collision the last time#
 
-        Scene scene = new Scene(grid, 400, 255);
+        Scene scene = new Scene(grid, 400, 290);
         primaryStage.setScene(scene);
         primaryStage.show();
     }
