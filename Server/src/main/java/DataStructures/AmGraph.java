@@ -2,6 +2,7 @@ package DataStructures;
 
 import IPSwitch.Router;
 import IPSwitch.Switch;
+import utils.Colour;
 
 import java.util.HashMap;
 import java.util.Hashtable;
@@ -81,7 +82,7 @@ public class AmGraph {
         for (HashMap.Entry<Node, Map<Node, Double>> entry : adjacencyMatrix.entrySet()) {
             Node node1 = entry.getKey();
             String nodeName1 = node1 instanceof Switch ? ((Switch) node1).getCityName() : ((Router) node1).getName();
-            System.out.print(nodeName1 + ": ");
+            System.out.print(Colour.yellow(nodeName1 + ": "));
             for (Map.Entry<Node, Double> innerEntry : entry.getValue().entrySet()) {
                 Node node2 = innerEntry.getKey();
                 String nodeName2 = node2 instanceof Switch ? ((Switch) node2).getCityName() : ((Router) node2).getName();

@@ -52,11 +52,14 @@ public class ClientGUI extends Application {
         grid.setVgap(10);
         grid.setHgap(10);
 
+        String hostName = "localhost";
+        int portNumber = 8080;
+
         ObservableList<String> letters = FXCollections.observableArrayList(
                 IntStream.rangeClosed('a', 'p').mapToObj(i -> "" + (char) i).collect(Collectors.toList())
         );
 
-        ObservableList<String> algorithms = FXCollections.observableArrayList("Dijkstra", "A*");
+        ObservableList<String> algorithms = FXCollections.observableArrayList("Dijkstra", "A*", "Preconfigured routing table");
         Label algorithmLabel = new Label("Algorithm:");
         GridPane.setConstraints(algorithmLabel, 0, 3);
         algorithmBox = new ComboBox<>(algorithms);
@@ -93,13 +96,13 @@ public class ClientGUI extends Application {
 
         Button sendButton = new Button("Send message across network");
         GridPane.setConstraints(sendButton, 0, 4);
-        sendButton.setOnAction(e -> handleNormalMessage());
+        sendButton.setOnAction(e -> handleNormalMessage(hostName, portNumber));
         sendButton.setDisable(false);
 
         Button wipeButton = new Button("Wipe");
         GridPane.setConstraints(wipeButton, 1, 4);
         wipeButton.setDisable(true);
-        wipeButton.setOnAction(e -> handleWipeCommand());
+        wipeButton.setOnAction(e -> handleWipeCommand(hostName, portNumber));
 
         Button terminateButton = new Button("Terminate Client");
         GridPane.setConstraints(terminateButton, 0, 6);
@@ -112,20 +115,18 @@ public class ClientGUI extends Application {
 
         clearLogButton = new Button("Clear Log");
         GridPane.setConstraints(clearLogButton, 1, 6);
-        clearLogButton.setOnAction(e -> handleClearLog());
+        clearLogButton.setOnAction(e -> handleClearLog(hostName, portNumber));
 
         grid.getChildren().addAll(srcLabel, srcBox, dstLabel, dstBox, msgLabel, msgBox, sendButton, wipeButton, terminateButton, viewLogsButton, clearLogButton, algorithmLabel, algorithmBox, startStopServerButton);
 
         //TODO: create action which starts sever and enables send button. It had a port collision the last time#
 
-        Scene scene = new Scene(grid, 400, 290);
+        Scene scene = new Scene(grid, 500, 290);
         primaryStage.setScene(scene);
         primaryStage.show();
     }
 
-    private void handleWipeCommand() {
-        String hostName = "localhost";
-        int portNumber = 8080;
+    private void handleWipeCommand(String hostName, int portNumber) {
 
         try {
             Socket socket = new Socket(hostName, portNumber);
@@ -140,14 +141,11 @@ public class ClientGUI extends Application {
         }
     }
 
-    private void handleNormalMessage() {
-        if (srcBox.getValue() == null || dstBox.getValue() == null || msgBox.getValue() == null) {
-            new Alert(Alert.AlertType.ERROR, "Please ensure values for source, destination, and message before sending").showAndWait();
+    private void handleNormalMessage(String hostName, int portNumber) {
+        if (srcBox.getValue() == null || dstBox.getValue() == null || msgBox.getValue() == null || algorithmBox.getValue() == null) {
+            new Alert(Alert.AlertType.ERROR, "Please ensure values for source, destination, message and algorithm before sending").showAndWait();
             return;
         }
-
-        String hostName = "localhost";
-        int portNumber = 8080;
 
         try {
             Socket socket = new Socket(hostName, portNumber);
@@ -156,6 +154,7 @@ public class ClientGUI extends Application {
             out.println(srcBox.getValue());
             out.println(dstBox.getValue());
             out.println(msgBox.getValue());
+            out.println(algorithmBox.getValue());
 
             out.close();
             socket.close();
@@ -212,9 +211,7 @@ public class ClientGUI extends Application {
         logStage.show();
     }
 
-    private void handleClearLog() {
-        String hostName = "localhost";
-        int portNumber = 8081;
+    private void handleClearLog(String hostName, int portNumber) {
 
         try {
             Socket socket = new Socket(hostName, portNumber);

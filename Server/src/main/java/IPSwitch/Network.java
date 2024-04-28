@@ -21,6 +21,7 @@ import static utils.LoadingBar.printDynamicLoadingBar;
  */
 public class Network {
     private AmGraph usaGraph;
+    private final String algorithm;
     private final int TRANSFER_RATE = 0;
     /**
      * maps the city name to the index in the adjacency matrix.
@@ -141,6 +142,38 @@ public class Network {
         usaGraph.printGraph();
     }
 
+    /**
+     * used to represent all dijkstra paths between all switches in the networkso it can integrate with code.
+     *
+     * @return list of all shortest paths between all switches in the network.
+     */
+    public List<List<Node>> calculateAllShortestPaths() {
+        long startTime = System.currentTimeMillis();
+        System.out.println(Colour.yellow("Calculating shortest paths for all LAN routes in the network...\n"));
+
+        IPSwitch.Paths paths = new IPSwitch.Paths(cityToIndexMap, nodesByCityName);
+
+        List<List<Node>> shortestPaths = new ArrayList<>();
+        for (String sourceCity : nodesByCityName.keySet()) {
+            if (!(nodesByCityName.get(sourceCity) instanceof Switch)) {
+                continue;
+            }
+            for (String destinationCity : nodesByCityName.keySet()) {
+                if (!(nodesByCityName.get(destinationCity) instanceof Switch)) {
+                    continue;
+                }
+                if (!sourceCity.equals(destinationCity)) {
+                    List<Node> shortestPath = paths.dijkstra(usaGraph.getAdjacencyMatrix(), sourceCity, destinationCity);
+                    shortestPaths.add(shortestPath);
+                }
+            }
+        }
+        long timeTaken = System.currentTimeMillis() - startTime;
+        Logger.log("[Dijkstra's algorithm - all routes] Time taken to execute: " + timeTaken + "ms");
+        System.out.println(Colour.yellow("Time has been logged"));
+        return shortestPaths;
+    }
+
 
     /**
      * Method to run the network at a national scale.
@@ -148,7 +181,7 @@ public class Network {
      * @throws InterruptedException If the thread is interrupted.
      * @throws IOException          If the file is not found or cannot be read.
      */
-    public void runWAN(String sourceER, String destER) throws InterruptedException, IOException {
+    public void runWAN() throws InterruptedException, IOException {
         System.out.println("\n \nDestination end host located in WIDER AREA NETWORK (WAN)...");
         Thread.sleep(2000);
         System.out.println("Packets will be routed through WAN...");
@@ -156,56 +189,153 @@ public class Network {
         System.out.println("Sending packets to end host in 3 seconds...");
         Thread.sleep(3000);
 
-        long start = System.currentTimeMillis();
-        int counter = 0;
-        while (filesToTransfer > 0) {
-            System.out.println("=====================================");
 
+        long start = System.currentTimeMillis();
+        List<List<Node>> shortestPathsList = null;
+
+        if ("Dijkstra".equals(algorithm)) {
+
+            System.out.println("Using Dijkstra's algorithm to route packets through the network...");
             generateCityToIndexMap();
             System.out.println("City to Index Map: " + cityToIndexMap);
-            IPSwitch.Paths paths = new IPSwitch.Paths(cityToIndexMap, nodesByCityName);
-            List<Node> shortestPath = paths.dijkstra(usaGraph.getAdjacencyMatrix(), sourceER, destER);
+            System.out.println("Adjacency matrix:\n" + usaGraph.getAdjacencyMatrix() + "\n");
 
-            System.exit(0);
+            shortestPathsList = calculateAllShortestPaths();
+            // print shortest paths list, a new line for each path
+            System.out.println("Shortest Paths List: ");
+            for (List<Node> path : shortestPathsList) {
+                System.out.println(path);
+            }
+        } else if ("A*".equals(algorithm)) {
+            System.out.println("Using A* algorithm to route packets through the network...");
+        } else if ("Preconfigured routing table".equals(algorithm)) {
+            System.out.println("Using preconfigured routing table to route packets through the network...");
+        }
 
-            for (HashTable.Entry<Integer, Switch> entry : switches.entrySet()) {
-                List<Double> nextHopsList = topology.get(entry.getKey()).getKey();
-                List<Router> nextRouterList = topology.get(entry.getKey()).getValue();
 
-                double currentNextHop = nextHopsList.get(counter % (nextHopsList.size()));
-                Router currentRouter = nextRouterList.get(counter % (nextRouterList.size()));
-                Router nextRouter = nextRouterList.get((counter + 1) % (nextRouterList.size()));
+        switch (algorithm) {
+            case "Dijkstra":
 
+                int counter = 0;
+                while (filesToTransfer > 0) {
+                    System.out.println("=====================================");
 
-                double distanceToNextNode = currentRouter.getDistanceTo(nextRouter);
+                    for (List<Node> path : shortestPathsList) {
+                        Switch sourceSwitchInPath = (Switch) path.get(0);
+                        Switch destSwitchInPath = (Switch) path.get(path.size() - 1);
+                        List<Router> routersInPath = new ArrayList<>();
+                        for (int i = 1; i < path.size() - 1; i++) {
+                            Node node = path.get(i);
+                            if (node instanceof Router) {
+                                routersInPath.add((Router) node);
+                            }
+                        }
 
-                try {
-                    currentRouter.top();
-                } catch (NoSuchElementException e) {
-                    continue; // queue is empty
-                }
+                        // Dequeue from source switch first
+                        try {
+                            sourceSwitchInPath.top();
+                        } catch (NoSuchElementException e) {
+                            continue;
+                        }
+                        Packet p = sourceSwitchInPath.top();
+                        System.out.println("Printing packet information");
+                        System.out.println(p);
 
-                Packet p = currentRouter.top();
+                        int networkId = getKeyOfSwitch(sourceSwitchInPath);
 
-                // if the packet at the top of the current router queue is a packet
-                // that is destined to this netid then we should process it
-                if (p.getDestNetId() == entry.getKey()) {
-                    p = currentRouter.dequeue();
+                        // Enqueue the packet to the first router in the path
+                        if (!routersInPath.isEmpty()) {
+                            routersInPath.get(0).enqueue(p);
+                        }
 
-                    // if it's the last router in our routing path
-                    // we should enqueue it to the switch
-                    if ((counter + 1) % (nextRouterList.size()) == 0) {
-                        Switch destSwitch = switches.get(entry.getKey());
+                        for (int i = 0; i < routersInPath.size(); i++) {
+                            Router currentRouter = routersInPath.get(i);
+                            Router nextRouter;
 
-                        sendPacketsAndReassemble(p, destSwitch, start);
-                    } else {
-                        // if it's not the last router in our routing path
-                        nextRouter.enqueue(p);
+                            try {
+                                currentRouter.top();
+                            } catch (NoSuchElementException e) {
+                                continue;
+                            }
+
+                            Packet p2 = currentRouter.top();
+
+                            if (p2.getDestNetId() == networkId) {
+                                p2 = currentRouter.dequeue();
+
+                                // if it's the last router in our routing path
+                                // we should enqueue it to the switch
+                                if (i == routersInPath.size() - 1) {
+                                    sendPacketsAndReassemble(p2, sourceSwitchInPath, start);
+                                } else {
+                                    // if it's not the last router in our routing path
+                                    nextRouter = routersInPath.get(i + 1);
+                                    nextRouter.enqueue(p2);
+                                }
+                            }
+                        }
+                        counter++;
                     }
                 }
-            }
-            //Thread.sleep(TRANSFER_RATE);
-            counter++;
+                break;
+
+
+            case "A*":
+                // TODO: Implement A* algorithm
+                counter = 0;
+                while (filesToTransfer > 0) {
+                    System.out.println("=====================================");
+                }
+                break;
+
+            case "Preconfigured routing table":
+
+                counter = 0;
+                while (filesToTransfer > 0) {
+                    System.out.println("=====================================");
+
+                    for (HashTable.Entry<Integer, Switch> entry : switches.entrySet()) {
+                        List<Double> nextHopsList = topology.get(entry.getKey()).getKey();
+                        List<Router> nextRouterList = topology.get(entry.getKey()).getValue();
+
+                        Router currentRouter = nextRouterList.get(counter % (nextRouterList.size()));
+                        Router nextRouter = nextRouterList.get((counter + 1) % (nextRouterList.size()));
+
+
+                        try {
+                            currentRouter.top();
+                        } catch (NoSuchElementException e) {
+                            continue; // queue is empty
+                        }
+
+                        Packet p = currentRouter.top();
+
+                        // if the packet at the top of the current router queue is a packet
+                        // that is destined to this netid then we should process it
+                        System.out.println("Packet Destination Net ID: " + p.getDestNetId());
+                        System.out.println("Entry Key: " + entry.getKey());
+
+                        if (p.getDestNetId() == entry.getKey()) {
+//                        System.out.println("entry.getKey is: " + entry.getKey()); // e.g.
+//                        System.exit(0);
+
+                            p = currentRouter.dequeue();
+
+                            // if it's the last router in our routing path
+                            // we should enqueue it to the switch
+                            if ((counter + 1) % (nextRouterList.size()) == 0) {
+                                Switch destSwitch = switches.get(entry.getKey());
+
+                                sendPacketsAndReassemble(p, destSwitch, start);
+                            } else {
+                                // if it's not the last router in our routing path
+                                nextRouter.enqueue(p);
+                            }
+                        }
+                        counter++;
+                    }
+                }
+                break;
         }
         System.out.println(Colour.yellowBold("\nTransfer complete.\nPlease check the destination folder for the transferred file. The log file contains details on processing speed.\n"));
     }
@@ -355,12 +485,14 @@ public class Network {
 
                     // remove all packets in network
                     // dequeue remaining packets from all the routers and switches in network
-                    clearNetwork();
+
                     break innerLoop;
                 }
             }
             counter++;
         }
+
+        clearNetwork();
         long timeTaken = System.currentTimeMillis() - start;
 
         String logMessage = "[Broadcast Request]  Time taken: " + timeTaken + "ms";
@@ -374,8 +506,8 @@ public class Network {
     }
 
 
-
     // TODO: make msgId to remove packets which contain the same msgId
+
     /**
      * Method to clear the network of packets. Dequeues all packets from all routers and switches in the network.
      * If the queue is empty, it ignores it and continues to the next queue.
@@ -476,7 +608,7 @@ public class Network {
             }
         } else {
             System.out.println(Colour.red("Broadcast packet has failed to reach destination switch: " + cityName
-                                        + ".\nExiting..."));
+                    + ".\nExiting..."));
             System.exit(1);
         }
         return null;
@@ -492,6 +624,9 @@ public class Network {
     private void sendPacketsAndReassemble(Packet p, Switch currentSwitch, long start) throws IOException, InterruptedException {
         Switch treeDestSwitch = null;
         String switchIdToFind = p.getDestNetIdFull();
+        System.out.println("Destination Switch ID: " + switchIdToFind);
+        System.out.println("Current Switch ID: " + currentSwitch.getCityName());
+        System.out.println("Current Switch ID: " + currentSwitch.getName());
 
         TreeNode switchNode = currentSwitch.getLanTree().findSwitchNodeByName(switchIdToFind);
         if (switchNode != null) {
@@ -503,6 +638,8 @@ public class Network {
 
         //Fix later
         treeDestSwitch.enqueue(p);
+
+        System.exit(0);
 
         // after we enqueue from the last router in the routing path
         // to the destination switch for this message
@@ -573,7 +710,7 @@ public class Network {
 
             long timeTaken = System.currentTimeMillis() - start;
             String logMessage = "[Message Transmission] Time taken for file: " + timeTaken + "ms. \n" +
-                                "Number of Packets in file [" + p.getFileName() + "] (msgId: " + p.getMsgId() + "): " + numPacketsRecv;
+                    "Number of Packets in file [" + p.getFileName() + "] (msgId: " + p.getMsgId() + "): " + numPacketsRecv;
             Logger.log(logMessage);
             System.out.println(Colour.yellow(logMessage));
             System.out.println(Colour.yellow("Time has been logged"));
@@ -657,7 +794,7 @@ public class Network {
 
             route = getRouteNameFromNetId(netId);
 
-            System.out.print("[NETWORK] - Building Routing table for " );
+            System.out.print("[NETWORK] - Building Routing table for ");
             System.out.print(Colour.yellow(route));
             System.out.print(" with");
             System.out.println(Colour.yellow(" netID = " + netId));
@@ -723,7 +860,7 @@ public class Network {
      * @param filesToTransfer   The number of files to transfer from a source folder to a destination folder.
      * @throws IOException If the file is not found or cannot be read.
      */
-    public Network(HashTable<String, HashTable.Entry<Integer, String>> localAreaNetworks,int filesToTransfer) throws IOException, InterruptedException {
+    public Network(HashTable<String, HashTable.Entry<Integer, String>> localAreaNetworks, int filesToTransfer, String algorithm) throws IOException, InterruptedException {
         // create n switches
         this.nodesByCityName = new HashMap<>();
         switches = new HashTable<>();
@@ -731,7 +868,7 @@ public class Network {
         topology = new HashTable<>();
         packetsToReassemble = new HashTable<>();
         this.filesToTransfer = filesToTransfer;
-
+        this.algorithm = algorithm;
 
         System.out.println("BUILDING SWITCHES...");
         Thread.sleep(2000);
@@ -756,7 +893,6 @@ public class Network {
             HashTable.Entry<List<Double>, List<Router>> TableEntry = new HashTable.Entry<>(nextHopLengthList, routerList);
             topology.put(networkId, TableEntry);
             System.out.println("[NETWORK] - Created IPSwitch.Switch " + s.getName() + " with netID = " + s.getId());
-
 
 
             //Create our LAN Network. Each Switch is the root node of a Tree.
@@ -786,8 +922,29 @@ public class Network {
 
         System.out.println("[NETWORK] - Empty Topology: " + topology);
 
+        // print switches
+        for (HashTable.Entry<Integer, Switch> entry : switches.entrySet()) {
+            System.out.println(entry.getKey() + "," + entry.getValue());
+        }
+
+        Thread.sleep(8000);
         // create the topology and routers simulating a routing algorithm already in place
         this.route();
+    }
+
+    /**
+     * Method to get the key of a switch in the network, which is the network id.
+     *
+     * @param s The switch to get the key of.
+     * @return The key of the switch in the network.
+     */
+    public Integer getKeyOfSwitch(Switch s) {
+        for (HashTable.Entry<Integer, Switch> entry : switches.entrySet()) {
+            if (entry.getValue().equals(s)) {
+                return entry.getKey();
+            }
+        }
+        return null;
     }
 
 }

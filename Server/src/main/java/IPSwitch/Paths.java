@@ -32,16 +32,15 @@ public class Paths {
      * @return a list of nodes representing the shortest path between the two cities
      */
     public List<Node> dijkstra(Map<Node, Map<Node, Double>> adjacencyMatrixMap, String sourceCity, String destinationCity) {
-        long startTime = System.currentTimeMillis();
         double[][] adjacencyMatrix = convertAdjacencyMatrix(adjacencyMatrixMap);
 
         int source = cityToIndexMap.get(sourceCity);
         int destination = cityToIndexMap.get(destinationCity);
 
-        System.out.println("Adjacency matrix:\n");
-        for (double[] row : adjacencyMatrix) {
-            System.out.println(Arrays.toString(row));
-        }
+//        System.out.println("Adjacency matrix:\n");
+//        for (double[] row : adjacencyMatrix) {
+//            System.out.println(Arrays.toString(row));
+//        }
 
         int n = adjacencyMatrix.length;
         double[] distances = new double[n];
@@ -85,15 +84,12 @@ public class Paths {
             path.add(indexToNodeMap.get(at));
             pathWithDistances.add(indexToNodeMap.get(at).getName() + " (distance to next node: " + edgeDistances[at] + ")");
         }
-        Collections.reverse(path);
+        Collections.reverse(path); // reverse the path to get the correct order
         Collections.reverse(pathWithDistances);
 
         System.out.println("Shortest path(km) : " + String.join(" -> ", pathWithDistances));
         System.out.println("Total distance: " + distances[destination]);
 
-        long timeTaken = System.currentTimeMillis() - startTime;
-        Logger.log("[Dijkstra's algorithm] Time taken to execute: " + timeTaken );
-        System.out.println(Colour.yellow("Time has been logged"));
         return path;
     }
 

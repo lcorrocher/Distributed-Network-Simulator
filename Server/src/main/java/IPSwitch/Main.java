@@ -38,6 +38,7 @@ public class Main {
     static List<String> sourceHostNames;
     static List<String> destinationEndHostNames;
     private static String endHostFoundCity;
+    private static String algorithm;
     private static final String IO_DIR = "server/io/";
 
 
@@ -92,7 +93,7 @@ public class Main {
                 BufferedReader in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
 
                 String line;
-                String[] message = new String[3];
+                String[] message = new String[4];
                 int index = 0;
                 while ((line = in.readLine()) != null) {
                     message[index] = line;
@@ -105,7 +106,7 @@ public class Main {
                     Thread.sleep(1000);
                     continue;
                 } else {
-                    System.out.println("Received client message [src = " + message[0] + ", dst = " + message[1] + ", filename = " + message[2] + "]\n");
+                    System.out.println("Received client message [src = " + message[0] + ", dst = " + message[1] + ", filename = " + message[2] + ", algorithm = " + message[3] + "]\n");
                 }
 
                 if (hasToBuildCache) {
@@ -126,6 +127,7 @@ public class Main {
                 sourceHostName = message[0];
                 destinationEndHostName = message[1];
                 filename = message[2];
+                algorithm = message[3];
 
                 Thread.sleep(1000);
                 setupNetwork(numberOfTransfers);
@@ -133,7 +135,7 @@ public class Main {
 
                 // Print file contents
                 System.out.println("\nYou will be transferring the following file: " + filename);
-                System.out.println("The first few lines of " + filename + " is: \n\n");
+                System.out.println("The first few lines of " + filename + " are: \n\n");
 
                 // filepath for the file to be transferred e.g beemovie.txt is server/io/filenames/beemovie.txt
                 String filePath = filenamesFilePath + filename;
@@ -191,6 +193,8 @@ public class Main {
                 String data = TxtToBinary.extractFromFile(filePath).toString();
                 String data1 = TxtToBinary.convertToBinary(data);
 
+
+
                 // Creates our packets and places them in a List.
                 List<Packet> packets = PacketMethods.writePackets(src, dest, data1, 16, filename, MessageType.TEXT, destinationIP);
 
@@ -203,7 +207,7 @@ public class Main {
                     net.runLAN();
                 } else {
                     // Starts the main loop.
-                    net.runWAN(sourceER, getEndHostFoundCity());
+                    net.runWAN();
                 }
 
                 // Close connections
@@ -389,7 +393,7 @@ public class Main {
 //        }
 
 
-        net = new Network(LOCAL_AREA_NETWORKS, filesToTransfer);
+        net = new Network(LOCAL_AREA_NETWORKS, filesToTransfer, algorithm);
     }
 
     /**
