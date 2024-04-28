@@ -94,13 +94,14 @@ public class ARP {
      */
     public static void wipeCache() throws InterruptedException {
         Logger.log("\nWiping ARP cache...\n");
-        // TODO: method requires access to delete the end host folders, currently won't let me delete them.
-        // uncomment when fixed
-        //deleteEndHostFolders();
+        /* TODO: method requires access to delete the end host folders, currently won't let me delete them. Uncomment when fixed.
+         deleteEndHostFolders();
+         System.out.println(Colour.yellow("EndHost paths have been deleted in file structure."));*/
         localEndHostTables = deepCopy(originalLocalEndHostTables);
-        System.out.println(Colour.yellow("EndHost paths have been deleted in file structure."));
         Thread.sleep(2000);
-        System.out.println(Colour.yellow("ARP cache has been wiped and returned to original status. No foreign end hosts in cache.\n"));
+        String msg = "ARP cache has been wiped and returned to its original state. No foreign end hosts exist in cache.\n";
+        System.out.println(Colour.yellow(msg));
+        Logger.log(msg);
     }
 
     /**

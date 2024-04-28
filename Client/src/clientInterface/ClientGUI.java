@@ -101,7 +101,7 @@ public class ClientGUI extends Application {
 
         Button wipeButton = new Button("Wipe");
         GridPane.setConstraints(wipeButton, 1, 4);
-        wipeButton.setDisable(true);
+        wipeButton.setDisable(false);
         wipeButton.setOnAction(e -> handleWipeCommand(hostName, portNumber));
 
         Button terminateButton = new Button("Terminate Client");
