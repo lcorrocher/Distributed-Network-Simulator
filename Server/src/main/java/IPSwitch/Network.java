@@ -533,6 +533,23 @@ public class Network {
         }
     }
 
+
+    // TODO: use this method to clear network instead. It deletes ALL packets from routers and switches, not just one.
+    /*private void clearNetwork() {
+        for (HashTable.Entry<Integer, Switch> switchEntry : switches.entrySet()) {
+            Switch currentSwitch = switchEntry.getValue();
+            while (!currentSwitch.getQueue().isEmpty()) {
+                currentSwitch.dequeue();
+            }
+
+            for (Router router : topology.get(switchEntry.getKey()).getValue()) {
+                while (!router.getQueue().isEmpty()) {
+                    router.dequeue();
+                }
+            }
+        }
+    }*/
+
     /**
      * Method to run the network at a local scale.
      *
