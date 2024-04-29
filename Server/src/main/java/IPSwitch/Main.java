@@ -3,10 +3,7 @@ package IPSwitch;
 import DataStructures.HashTable;
 import utils.*;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStreamReader;
+import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
@@ -84,20 +81,29 @@ public class Main {
 
         try {
             ServerSocket serverSocket = new ServerSocket(portNumber);
-            System.out.println("Session established. Network is running and waiting for connections...\n");
+            System.out.println("Session established. Network is active and awaiting connections...\n");
 
             while (true) {
                 Socket clientSocket = serverSocket.accept();
                 System.out.println("Client connected: " + clientSocket.getInetAddress());
 
                 BufferedReader in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
+                PrintWriter out = new PrintWriter(clientSocket.getOutputStream(), true);
 
                 String line;
                 String[] message = new String[4];
                 int index = 0;
                 while ((line = in.readLine()) != null) {
-                    message[index] = line;
-                    index++;
+                    if ("GET_ROUTER_NAMES".equals(line)) {
+                        List<String> routerNames = net.getRouterNames();
+                        for (String routerName : routerNames) {
+                            out.println(routerName);
+                        }
+                        out.println(""); // empty line to indicate the end of the list
+                    } else {
+                        message[index] = line;
+                        index++;
+                    }
                 }
 
                 if (!hasToBuildCache && message[0].equals("wipe")) {

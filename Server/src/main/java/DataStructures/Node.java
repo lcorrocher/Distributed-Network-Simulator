@@ -15,6 +15,7 @@ import java.util.NoSuchElementException;
  */
 
 public abstract class Node{
+    private boolean active;
 
     private final int id;
     private final String name;
@@ -30,11 +31,19 @@ public abstract class Node{
     }
 
     public abstract Coordinates getCoordinates();
+    public abstract boolean isRouter();
 
     public double getDistanceTo(Node otherNode) {
         return this.getCoordinates().haversine(otherNode.getCoordinates());
     }
 
+    public boolean isActive() {
+        return active;
+    }
+
+    public void deactivate() {
+        this.active = false;
+    }
 
     /**
      * Method to find the index of the first packet with the target message id, i.e. the top packet's msgId

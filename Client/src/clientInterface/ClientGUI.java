@@ -1,27 +1,20 @@
 package clientInterface;
 
 import javafx.application.Application;
+import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.layout.GridPane;
-import javafx.scene.layout.VBox;
 import javafx.scene.layout.Priority;
+import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
-import javafx.application.Platform;
-
-import java.nio.file.WatchService;
-import java.nio.file.FileSystems;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.nio.file.StandardWatchEventKinds;
-import java.nio.file.WatchEvent;
-import java.nio.file.WatchKey;
 
 import java.io.*;
 import java.net.Socket;
+import java.nio.file.*;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -58,6 +51,7 @@ public class ClientGUI extends Application {
         ObservableList<String> letters = FXCollections.observableArrayList(
                 IntStream.rangeClosed('a', 'p').mapToObj(i -> "" + (char) i).collect(Collectors.toList())
         );
+
 
         ObservableList<String> algorithms = FXCollections.observableArrayList("Dijkstra", "A*", "Preconfigured routing table");
         Label algorithmLabel = new Label("Algorithm:");
@@ -117,14 +111,17 @@ public class ClientGUI extends Application {
         GridPane.setConstraints(clearLogButton, 1, 6);
         clearLogButton.setOnAction(e -> handleClearLog(hostName, portNumber));
 
-        grid.getChildren().addAll(srcLabel, srcBox, dstLabel, dstBox, msgLabel, msgBox, sendButton, wipeButton, terminateButton, viewLogsButton, clearLogButton, algorithmLabel, algorithmBox, startStopServerButton);
+
+        grid.getChildren().addAll(srcLabel, srcBox, dstLabel, dstBox, msgLabel, msgBox, sendButton, wipeButton, terminateButton, viewLogsButton,
+                clearLogButton, algorithmLabel, algorithmBox, startStopServerButton);
 
         //TODO: create action which starts sever and enables send button. It had a port collision the last time#
 
-        Scene scene = new Scene(grid, 500, 290);
+        Scene scene = new Scene(grid, 420, 290);
         primaryStage.setScene(scene);
         primaryStage.show();
     }
+
 
     private void handleWipeCommand(String hostName, int portNumber) {
 

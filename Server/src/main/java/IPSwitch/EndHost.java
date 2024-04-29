@@ -30,4 +30,9 @@ public class EndHost extends Node {
     public String toString() {
         return super.toString() + String.format(", IP Address: %s, MAC Address: %s", ipAddr, macAddr);
     }
+
+    @Override
+    public boolean isRouter() {
+        return false;
+    }
 }

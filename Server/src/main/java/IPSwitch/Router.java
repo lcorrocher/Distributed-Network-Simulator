@@ -32,6 +32,10 @@ public class Router extends Node {
         return "ROUTER: " +  getName() + String.format(", Coordinates: %s", coordinates);
     }
 
+    @Override
+    public boolean isRouter() {
+        return true;
+    }
 
 
 

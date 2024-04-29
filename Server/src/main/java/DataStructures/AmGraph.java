@@ -63,7 +63,14 @@ public class AmGraph {
     }
 
     public void removeNode(String cityName) {
+        System.out.println(nodesByCityName);
         Node nodeToRemove = nodesByCityName.get(cityName);
+        System.out.println(nodeToRemove);
+
+        if (nodeToRemove == null) {
+            throw new IllegalArgumentException("Node is null. Cannot remove node from graph.");
+        }
+        nodesByCityName.remove(cityName);
 
         // Remove all edges from the node
         adjacencyMatrix.remove(nodeToRemove);

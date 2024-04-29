@@ -33,6 +33,10 @@ public class Switch extends Node {
         return "SWITCH: " + getCityName() + String.format(", Coordinates: %s", coordinates);
     }
 
+    @Override
+    public boolean isRouter() {
+        return false;
+    }
     public String getCityName() {
         return Main.getCityNameFromSwitchId(getName());
     }

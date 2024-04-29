@@ -1,8 +1,6 @@
 package IPSwitch;
 
 import DataStructures.Node;
-import utils.Colour;
-import utils.Logger;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -12,23 +10,26 @@ public class Paths {
     private final Map<String, Integer> cityToIndexMap;
     private final Map<Integer, Node> indexToNodeMap;
     private final Map<String, Node> nodesByCityName;
+    private final Map<Node, Map<Node, Double>> adjacencyMatrixMap;
 
-    public Paths(Map<String, Integer> cityToIndexMap, Map<String, Node> nodesByCityName) {
+    public Paths(Map<String, Integer> cityToIndexMap, Map<String, Node> nodesByCityName, Map<Node, Map<Node, Double>> adjacencyMatrixMap) {
         this.cityToIndexMap = cityToIndexMap;
         this.nodesByCityName = nodesByCityName;
+        this.adjacencyMatrixMap = adjacencyMatrixMap;
         this.indexToNodeMap = cityToIndexMap.entrySet().stream()
                 .collect(Collectors.toMap(Map.Entry::getValue, e -> nodesByCityName.get(e.getKey())));
     }
 
-    private Node getNodeByName(String cityName) {
+    public Node getNodeByName(String cityName) {
         return nodesByCityName.get(cityName);
     }
 
     /**
      * Method to find the shortest path between two cities using Dijkstra's algorithm
+     *
      * @param adjacencyMatrixMap The adjacency matrix of the graph
-     * @param sourceCity The name of the source city
-     * @param destinationCity The name of the destination city
+     * @param sourceCity         The name of the source city
+     * @param destinationCity    The name of the destination city
      * @return a list of nodes representing the shortest path between the two cities
      */
     public List<Node> dijkstra(Map<Node, Map<Node, Double>> adjacencyMatrixMap, String sourceCity, String destinationCity) {
@@ -36,11 +37,6 @@ public class Paths {
 
         int source = cityToIndexMap.get(sourceCity);
         int destination = cityToIndexMap.get(destinationCity);
-
-//        System.out.println("Adjacency matrix:\n");
-//        for (double[] row : adjacencyMatrix) {
-//            System.out.println(Arrays.toString(row));
-//        }
 
         int n = adjacencyMatrix.length;
         double[] distances = new double[n];
@@ -57,9 +53,13 @@ public class Paths {
         for (int i = 0; i < n; i++) {
             int node = -1;
             for (int j = 0; j < n; j++) {
-                if (!visited[j] && (node == -1 || distances[j] < distances[node])) {
+                if (!visited[j] && (node == -1 || distances[j] < distances[node]) && indexToNodeMap.get(j).isActive()) {
                     node = j;
                 }
+            }
+
+            if (node == -1) {
+                break;
             }
 
             if (node == destination) {
@@ -70,7 +70,7 @@ public class Paths {
 
             for (int j = 0; j < n; j++) {
                 double weight = adjacencyMatrix[node][j];
-                if (weight != 0 && distances[node] + weight < distances[j]) {
+                if (weight != 0 && distances[node] + weight < distances[j] && indexToNodeMap.get(j).isActive()) {
                     distances[j] = distances[node] + weight;
                     edgeDistances[j] = weight;
                     previous[j] = node;
@@ -99,12 +99,18 @@ public class Paths {
 
         for (int i = 0; i < size; i++) {
             Node node1 = indexToNodeMap.get(i);
+            Map<Node, Double> node1Edges = adjacencyMatrixMap.get(node1);
+            // node may still exist in the graph but unconnected
+            if (node1Edges == null) {
+                continue;
+            }
             for (int j = 0; j < size; j++) {
                 Node node2 = indexToNodeMap.get(j);
-                adjacencyMatrix[i][j] = adjacencyMatrixMap.get(node1).getOrDefault(node2, 0.0);
+                adjacencyMatrix[i][j] = node1Edges.getOrDefault(node2, 0.0);
             }
         }
 
         return adjacencyMatrix;
     }
+
 }

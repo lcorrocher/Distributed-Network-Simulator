@@ -20,6 +20,16 @@ import static utils.LoadingBar.printDynamicLoadingBar;
  * The network has a transfer rate, a Hash Table of switches, a table of routers, a map of the topology, and a number of files to transfer.
  */
 public class Network {
+
+    /**
+     * List for deactivated routers, routers which are not in use in the network, no edge routers.
+     */
+    private ArrayList<String> deactivatedRouters = new ArrayList<>();
+    /**
+     * The maximum number of deactivated routers in the network. If it is greater than this number, the network will have no routers and won't be able to route packets.
+     */
+    private static final int MAX_DEACTIVATED_ROUTERS = 2;
+
     /**
      * The adjacency matrix graph of the network.
      */
@@ -166,7 +176,7 @@ public class Network {
         long startTime = System.currentTimeMillis();
         System.out.println(Colour.yellow("Calculating shortest paths for all LAN routes in the network...\n"));
 
-        IPSwitch.Paths paths = new IPSwitch.Paths(cityToIndexMap, nodesByCityName);
+        IPSwitch.Paths paths = new IPSwitch.Paths(cityToIndexMap, nodesByCityName, usaGraph.getAdjacencyMatrix());
 
         List<List<Node>> shortestPaths = new ArrayList<>();
         for (String sourceCity : nodesByCityName.keySet()) {
@@ -209,18 +219,65 @@ public class Network {
         switch (algorithm) {
             case "Dijkstra":
 
-                System.out.println("Using Dijkstra's algorithm to route packets through the network...");
+                System.out.println("Using Dijkstra's algorithm to find shortest paths through the network...");
                 generateCityToIndexMap();
                 System.out.println("City to Index Map: " + cityToIndexMap);
                 System.out.println("Adjacency matrix:\n" + usaGraph.getAdjacencyMatrix() + "\n");
 
+                for (Map.Entry<Node, Map<Node, Double>> row : usaGraph.getAdjacencyMatrix().entrySet()) {
+                    for (Map.Entry<Node, Double> column : row.getValue().entrySet()) {
+                        System.out.print(column.getValue() + " ");
+                    }
+                    System.out.println();
+                }
+
                 Thread.sleep(2000);
 
                 shortestPathsList = calculateAllShortestPaths();
-                System.out.println("Shortest Paths List: \n");
+                System.out.println("Shortest paths list: \n");
                 for (List<Node> path : shortestPathsList) {
                     System.out.println(path);
                 }
+
+                Scanner in = new Scanner(System.in);
+                System.out.println(Colour.yellowBold("\nWould you like to deactivate any routers? (Y/N)"));
+                String response = in.nextLine();
+                if (response.equalsIgnoreCase("Y")) {
+                    while(true) {
+                    System.out.println(Colour.yellow("Choose from the following routers to deactivate: "));
+                    List<String> routerNamesList = getRouterNames();
+                    routerNamesList.forEach(System.out::println);
+                    System.out.println(Colour.yellow("\nEnter the names of the routers to deactivate, separated by commas:"));
+                    String input = in.nextLine();
+
+                    String[] routerNames = input.split(",");
+
+                        boolean allRoutersExist = true;
+                        for (String routerName : routerNames) {
+                            routerName = routerName.trim().toUpperCase();
+                            System.out.println("routerName: " + routerName);
+                            if (nodesByCityName.containsKey(routerName)) {
+
+                                deactivateRouter(routerName);
+
+                            } else {
+                                System.out.println(Colour.red("Router [" + routerName + "] does not exist."));
+                                allRoutersExist = false;
+                            }
+                        }
+                        if (allRoutersExist) {
+                            break;
+                        }
+                    }
+                    System.out.println("\nRecalculating shortest paths...");
+                    shortestPathsList = calculateAllShortestPaths();
+                    System.out.println("Revised shortest paths list: \n");
+                    for (List<Node> path : shortestPathsList) {
+                        System.out.println(path);
+                    }
+                }
+
+                Thread.sleep(2000);
 
                 System.out.println("\nSending packets to end host in 3 seconds...");
                 Thread.sleep(3000);
@@ -840,9 +897,8 @@ public class Network {
                     topology.get(netId).getValue().add(r);
                 }
             }
-
-            // find route
         }
+
         System.out.println("\n" + netIdTable.entrySet().size() + " routes built.");
 
         System.out.println("[NETWORK] - Init static tTopology: " + topology);
@@ -927,8 +983,8 @@ public class Network {
             System.out.println(entry.getKey() + "," + entry.getValue());
         }
 
-        Thread.sleep(8000);
-        // create the topology and routers simulating a routing algorithm already in place
+        Thread.sleep(3000);
+
         this.route();
     }
 
@@ -944,6 +1000,35 @@ public class Network {
             }
         }
         return null;
+    }
+
+    /**
+     * creates a collection of routers based of the nodesByCityName map by filtering for routers
+     * @return a list of routers in map
+     */
+    public List<String> getRouterNames() {
+        return nodesByCityName.entrySet().stream()
+                .filter(entry -> entry.getValue().isRouter())
+                .map(Map.Entry::getKey)
+                .collect(Collectors.toList());
+    }
+
+    /**
+     * Method to deactivate a router in the network to show dijkstra's algorithm is dynamic. Removes edges from the graph.
+     * @param routerName The name of the router to deactivate.
+     */
+    private void deactivateRouter(String routerName) {
+        if (deactivatedRouters.size() >= MAX_DEACTIVATED_ROUTERS) {
+            System.out.println(Colour.red("Maximum number of deactivated routers reached. Cannot deactivate more routers, otherwise the network will be disconnected."));
+            return;
+        }
+
+        Node nodeToDeactivate = nodesByCityName.get(routerName);
+        nodeToDeactivate.deactivate();
+        deactivatedRouters.add(routerName);
+        String msg = "Router [" + routerName + "] has been deactivated.";
+        System.out.println(Colour.yellow(msg));
+        Logger.log(msg);
     }
 
 }
