@@ -214,14 +214,52 @@ public class Network {
                 System.out.println("City to Index Map: " + cityToIndexMap);
                 System.out.println("Adjacency matrix:\n" + usaGraph.getAdjacencyMatrix() + "\n");
 
+                // pretty print the adjacency matrix
+                for (Map.Entry<Node, Map<Node, Double>> row: usaGraph.getAdjacencyMatrix().entrySet()) {
+                    for (Map.Entry<Node, Double> col: row.getValue().entrySet()) {
+                        System.out.println(row.getKey() + " -> " + col.getKey() + " : " + col.getValue());
+                    }
+                }
+
                 Thread.sleep(2000);
 
                 shortestPathsList = calculateAllShortestPaths();
-                System.out.println("Shortest Paths List: \n");
+                System.out.println("Shortest paths list: \n");
                 for (List<Node> path : shortestPathsList) {
                     System.out.println(path);
                 }
 
+                Scanner in = new Scanner(System.in);
+                System.out.println((Colour.yellowBold("Would you like to deactivate a router link in the network? (Y/N)")));
+                String response = in.nextLine();
+                if (response.equalsIgnoreCase("Y"))  {
+                    while(true) {
+                        System.out.println((Colour.yellow("Choose a router from the following to deactivate:")));
+                        List<String> routerNamesList = getRouters();
+                        routerNamesList.forEach(System.out::println);
+                        System.out.println(Colour.yellow("\nEnter the name of the router to deactivate:"));
+                        String routerToDeactivate = in.nextLine();
+
+                        routerToDeactivate = routerToDeactivate.toUpperCase();
+                        System.out.println("selected router to deactivate: " + routerToDeactivate);
+                        if(nodesByCityName.containsKey(routerToDeactivate)) {
+                            Router router = (Router) nodesByCityName.get(routerToDeactivate);
+                            System.out.println("Planning to deactivate router: " + router.getName());
+//                            deactivateRouter(router);
+                            break;
+                        } else {
+                            System.out.println(Colour.red("Invalid router name. Please try again."));
+                        }
+                    }
+                    System.out.println("\nRecalculating shortest paths...");
+                    shortestPathsList = calculateAllShortestPaths();
+                    System.out.println("\nRevised shortest paths list: \n");
+                    for (List<Node> path : shortestPathsList) {
+                        System.out.println(path);
+                    }
+                }
+
+                Thread.sleep(2000);
                 System.out.println("\nSending packets to end host in 3 seconds...");
                 Thread.sleep(3000);
 
@@ -945,5 +983,19 @@ public class Network {
         }
         return null;
     }
+
+    /**
+     * creates new list of routers from nodesByCityName
+     */
+    public List<String> getRouters() {
+        List<String> routers = new ArrayList<>();
+        for (String cityName : nodesByCityName.keySet()) {
+            if (nodesByCityName.get(cityName) instanceof Router) {
+                routers.add(cityName);
+            }
+        }
+        return routers;
+    }
+
 
 }
