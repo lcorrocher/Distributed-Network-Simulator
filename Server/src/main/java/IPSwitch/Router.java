@@ -9,6 +9,8 @@ import DataStructures.NodeType;
 
 public class Router extends Node {
     private final Coordinates coordinates;
+    private boolean isActive;
+
 
     /**
      * Constructor for the router.
@@ -20,6 +22,7 @@ public class Router extends Node {
     public Router(int id, String name, Coordinates coordinates) {
         super(id, name, NodeType.ROUTER);
         this.coordinates = coordinates;
+        this.isActive = true;
     }
 
     @Override
@@ -32,6 +35,14 @@ public class Router extends Node {
         return "ROUTER: " +  getName() + String.format(", Coordinates: %s", coordinates);
     }
 
+
+    public boolean isActive() {
+        return isActive;
+    }
+
+    public void setActive(boolean active) {
+        isActive = active;
+    }
 
 
 

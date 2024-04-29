@@ -372,6 +372,14 @@ public class Network {
     }
 
     /**
+     * Deactivates the router by setting the active status to false.
+     * @param router the Router router to deactivate
+     */
+    private void deactivateRouter(Router router) {
+        router.setActive(false);
+    }
+
+    /**
      * routes the broadcast response packets through the Wan to the origin city and returns the end host
      * @param originCity the city that calls the initial broadcast request
      * @throws InterruptedException if the thread is interrupted

@@ -1,8 +1,6 @@
 package IPSwitch;
 
 import DataStructures.Node;
-import utils.Colour;
-import utils.Logger;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -101,7 +99,11 @@ public class Paths {
             Node node1 = indexToNodeMap.get(i);
             for (int j = 0; j < size; j++) {
                 Node node2 = indexToNodeMap.get(j);
-                adjacencyMatrix[i][j] = adjacencyMatrixMap.get(node1).getOrDefault(node2, 0.0);
+                if (node1 instanceof Router && !((Router) node1).isActive()) {
+                    adjacencyMatrix[i][j] = Double.MAX_VALUE;
+                } else {
+                    adjacencyMatrix[i][j] = adjacencyMatrixMap.get(node1).getOrDefault(node2, 0.0);
+                }
             }
         }
 
