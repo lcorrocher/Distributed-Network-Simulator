@@ -158,13 +158,13 @@ public class Network {
     }
 
     /**
-     * used to represent all dijkstra paths between all switches in the networkso it can integrate with code.
-     *
+     * used to represent all dijkstra paths between all switches in the network so it can integrate with code.
+     * added condition that it must pass through an active router.
      * @return list of all shortest paths between all switches in the network.
      */
     public List<List<Node>> calculateAllShortestPaths() {
         long startTime = System.currentTimeMillis();
-        System.out.println(Colour.yellow("Calculating shortest paths for all LAN routes in the network...\n"));
+        System.out.println(Colour.yellow("\n\nCalculating shortest paths for all LAN routes in the network...\n"));
 
         IPSwitch.Paths paths = new IPSwitch.Paths(cityToIndexMap, nodesByCityName);
 
@@ -179,7 +179,9 @@ public class Network {
                 }
                 if (!sourceCity.equals(destinationCity)) {
                     List<Node> shortestPath = paths.dijkstra(usaGraph.getAdjacencyMatrix(), sourceCity, destinationCity);
-                    shortestPaths.add(shortestPath);
+                    if (shortestPath.stream().anyMatch(node -> node instanceof Router && ((Router) node).isActive())) {
+                        shortestPaths.add(shortestPath);
+                    }
                 }
             }
         }
@@ -244,8 +246,7 @@ public class Network {
                         System.out.println("selected router to deactivate: " + routerToDeactivate);
                         if(nodesByCityName.containsKey(routerToDeactivate)) {
                             Router router = (Router) nodesByCityName.get(routerToDeactivate);
-                            System.out.println("Planning to deactivate router: " + router.getName());
-//                            deactivateRouter(router);
+                            deactivateRouter(router);
                             break;
                         } else {
                             System.out.println(Colour.red("Invalid router name. Please try again."));
@@ -253,7 +254,7 @@ public class Network {
                     }
                     System.out.println("\nRecalculating shortest paths...");
                     shortestPathsList = calculateAllShortestPaths();
-                    System.out.println("\nRevised shortest paths list: \n");
+                    System.out.println("\nRevised shortest paths list is seen below. It does not contain the deactivated router.\n");
                     for (List<Node> path : shortestPathsList) {
                         System.out.println(path);
                     }
