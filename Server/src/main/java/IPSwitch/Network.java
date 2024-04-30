@@ -266,8 +266,6 @@ public class Network {
 
                 int counter = 0;
                 while (filesToTransfer > 0) {
-                    System.out.println("=====================================");
-
                     for (List<Node> path : shortestPathsList) {
                         // using first node .get(0) in path as the algorithm reverse engineers the path
                         Switch destSwitchInPath = (Switch) path.get(0);
@@ -279,8 +277,11 @@ public class Network {
                             }
                         }
 
-                        int networkId = getKeyOfSwitch(destSwitchInPath);
+                        for(int i = 0; i < topology.get(sourceSwitch).getValue().get(0).getQueue().size(); i++){
+                            routersInPath.get(0).enqueue(topology.get(sourceSwitch).getValue().get(0).dequeue());
+                        }
 
+                        int networkId = getKeyOfSwitch(destSwitchInPath);
                         for (int i = 0; i < routersInPath.size(); i++) {
                             Router currentRouter = routersInPath.get(i % routersInPath.size());
                             Router nextRouter = routersInPath.get((i + 1) % routersInPath.size());
@@ -293,10 +294,8 @@ public class Network {
 
                             Packet p = currentRouter.top();
 
-                            /*// debugging purposes
-                            System.out.println("Packet Destination Net ID: " + p.getDestNetId());
-                            System.out.println("Network ID: " + networkId);*/
-
+//                            System.out.println("Packet Destination Net ID: " + p.getDestNetId());
+//                            System.out.println("Network ID: " + networkId);
                             if (p.getDestNetId() == networkId) {
                                 p = currentRouter.dequeue();
                                 // if it's the last router in our routing path
