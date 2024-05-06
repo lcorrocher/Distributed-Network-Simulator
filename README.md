@@ -1,4 +1,4 @@
-# WAN packet forwarding - Assignment 4 - HashTables used for Broadcast Protocol, Hashing, Encryption in Packet Transmission
+# Distributed Network Simulator - Assignment 5 - Graphs as a backbone for our network simulation.
 
 ## Build
 
