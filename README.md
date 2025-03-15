@@ -1,4 +1,4 @@
-# Distributed Network Simulator - Assignment 5 - Graphs as a backbone for our network simulation.
+# Distributed Network Simulator - Graphs as a backbone for our network simulation.
 
 ## Build
 
