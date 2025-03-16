@@ -126,8 +126,12 @@ The application is designed to be scalable and efficient, with a time complexity
 
 **What is a message?**  
 
-It can be anything someone wants to send to someone else over a network. In our case, we have created .txt files which will be used as messages: beemovie.txt, motivation.txt.
+It can be anything someone wants to send to someone else over a network. In our case, we have used movie scripts which will be used as messages: beemovie.txt, motivation.txt.
 We will be sending these messages from one endHost to another through the network.
+
+At a high level, the message is broken down into smaller chunks i.e payload and encapsulated within a packet, where each packet is dynamically routed through the network and reassembled at the destination. Think of the network as a function: input message-> fed into network as packets -> reassembled message.
+
+https://github.com/user-attachments/assets/012595fe-40d1-4e6d-8895-3056dcb8adeb
 
 **Here, we will attempt to route a message from endHost a in FRESNO to endHost p in NEW YORK CITY**
 
